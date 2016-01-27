@@ -1,0 +1,12 @@
+<?php
+echo "<p class=\"lead\">Download certificate</p>";
+echo "<form action=\"process.php\" method=\"POST\">";
+echo "<p>Thank you for all the work you have done to make ISOS a success.  Please click the button below to receive your certificate.</p>";
+echo "<input type=\"hidden\" name=\"page\" value=\"{$page}\"/>";
+$_SESSION['csrfToken'] = $token = base64_encode( openssl_random_pseudo_bytes(32));
+echo "<input type=\"hidden\" name=\"csrfToken\" value=\"{$token}\"/>";
+echo "<div class=\"form-actions\">";
+echo "<button type=\"submit\" class=\"btn btn-primary\">Get Certificate</button>";
+echo "</div>";
+echo "</form>";
+?>

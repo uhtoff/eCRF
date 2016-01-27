@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /database/
+Disallow: /libs/
+Disallow: /addons/
+Disallow: /classes/

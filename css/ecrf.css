@@ -1,0 +1,180 @@
+  html,
+  body {
+	height: 100%;
+	/* The html and body elements cannot have any padding or margin. */
+  }
+  
+  /* Wrapper for page content to push down footer */
+  #wrap {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	/* Negative indent footer by it's height */
+	margin: 0 auto -61px;
+  }
+
+  /* Set the fixed height of the footer here */
+  #push {
+	height: 61px;
+  }
+  #footer {
+	height: 60px;
+	background-color: #f5f5f5;
+	border-top: 1px solid #e3e3e3;
+  }
+
+  /* Lastly, apply responsive CSS fixes as necessary */
+  @media (max-width: 767px) {
+	#footer {
+	  margin-left: -20px;
+	  margin-right: -20px;
+	  padding-left: 20px;
+	  padding-right: 20px;
+	  
+	}
+  }
+
+  /* Adds a background image to the wrapping div with class background */
+  div#wrap.background {
+	  background-image: url("/img/PRISM_logo_trans.png");
+	background-repeat:no-repeat;
+	background-position: center center;
+  }
+
+
+  /* Custom page CSS
+  -------------------------------------------------- */
+  /* Not required for template or sticky footer method. */
+  
+#wrap > .container {
+	padding-top: 70px;
+}
+
+   @media (min-width: 981px) { #wrap > .container { padding-top: 70px; } }
+   
+
+   
+  .container .credit {
+	margin: 20px 0;
+  }
+
+/* The next three rules make the tab menu/nav bar look good inside a well */
+	  
+ul.nav.nav-tabs {
+	margin-bottom: 0;
+}
+	  
+.tab-content > div.tab-pane {
+	background-color: #FFF;
+	padding: 10px;
+	margin-top: 0;
+	border-left: 1px solid rgb(221,221,221);
+	border-right: 1px solid rgb(221,221,221);
+	border-bottom: 1px solid rgb(221,221,221);
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.tab-content div.form-actions {
+	background-color: #FFF;
+}
+
+/* This css give an option to split below a row */
+
+div.row.split-below {
+	margin-bottom: 20px;
+	border-bottom: 1px solid rgb(221,221,221);
+}
+
+/* The next two rules make a username/password box fit better within the top navbar */	
+
+.navbar .nav > li > a {
+	padding-top: 14px;
+	padding-bottom: 18px;
+}
+
+.navbar .form-inline {
+	padding-top: 7px;
+}
+	
+.navbar .form-inline .btn {
+margin: 0;
+}
+
+.nomargin {
+margin: 5px 0 0 5px;
+}
+
+/* This rule to give padding for sub-tabs */
+
+div.tab-content div.tab-content {
+	padding-top:10px;
+}
+
+/* The next three rules widen the horizontal form label field */
+
+.form-horizontal .control-label {
+  float: left;
+  padding-top: 5px;
+  text-align: right;
+  width: 38em;
+}
+
+.form-horizontal .controls {
+  margin-left: 39em;
+  *display: inline-block;
+  *padding-left: 1em;
+  *margin-left: 0;
+}
+
+.form-horizontal .form-actions {
+    padding-left: 39em;
+}
+
+@media (max-width: 981px) {
+	.form-horizontal .control-label {
+		float: left;
+		padding-top: 5px;
+		text-align: right;
+		width: 20em;
+	}
+
+	.form-horizontal .controls {
+		margin-left: 21em;
+		*display: inline-block;
+		*padding-left: 1em;
+		*margin-left: 0;
+	}
+
+	.form-horizontal .form-actions {
+		padding-left: 21em;
+	}
+}
+
+form.crf {
+    padding-top: 5px;
+}
+
+.strong {
+	font-weight: bold;
+}
+
+i.red {
+	color: red;
+}
+
+iframe[src="about:blank"]{
+	display:none; /* Hide reCaptcha iframe */
+}
+
+ul.checklist li {
+    list-style-type: none;
+}
+
+.navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus {
+    background-color: #e5e5e5;
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle, .navbar .nav li.dropdown.active > .dropdown-toggle, .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+	background-color: #e5e5e5;
+}

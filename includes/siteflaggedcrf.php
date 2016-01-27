@@ -1,0 +1,1 @@
+<?phpwrite_search_table( 'siteflaggedcrfs' );$_SESSION['returnTo'] = 'siteflaggedcrf';?>
