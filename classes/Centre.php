@@ -29,6 +29,21 @@ class Centre extends DBObject {
         }
         return $getCentreUnits;
     }
+    public function getPIName() {
+        $sql = "SELECT user.id as userID from user
+              WHERE centre_id = ? AND privilege_id = 10
+              ORDER BY id
+              LIMIT 1";
+        $pA = array('i',$this->getID());
+        $result = DB::query($sql,$pA);
+        foreach( $result->rows as $row ) {
+            if ( $row->userID ) {
+                $pi = new eCRFUser($row->userID);
+                return $pi;
+            }
+        }
+
+    }
     protected function getUsers() {
         $sql = "SELECT user.id as userID FROM user
             WHERE centre_id = ?";

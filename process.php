@@ -656,6 +656,41 @@ switch( $include ) {
             exit();
         }
         break;
+    case 'ukcrn':
+        $output = "StudyID,Acronym,InvestigatorName,InvestigatorID,SiteName,SiteID,StudyPatientID,StudyEntryDate,EntryEvent,EntryEventNo,RecruitType,RunningTotal,Gender,DOB,Ethnicity,Postcode\r\n";
+        $sql = "SELECT link.id FROM link
+  LEFT JOIN core ON link.core_id = core.id
+  LEFT JOIN centre ON core.centre_id = centre.id
+  WHERE centre.country_id = 30
+  ORDER BY link.id";
+        $query = DB::query($sql);
+        $count = 1;
+        foreach( $query->rows as $row ) {
+            $record = new Record($row->id);
+            $record->getAllData();
+            $centre = new Centre($record->getCentre());
+            $output .= "20252,PRISM,";
+            $output .= "{$centre->getPIName()},";
+            $output .= ",";
+            $output .= "{$centre->name},,";
+            $output .= $record->getField('core', 'trialid') . ',';
+            $output .= $record->getField('core','randdate') . ',';
+            $output .= "Randomisation,1,1,";
+            $output .= "{$count}";
+            $output .= "\r\n";
+            $count++;
+        }
+        $date = date('Y-m-d');
+        $filename = "UKCRN.{$date}.csv";
+        header('Pragma: public');
+        header('Expires: -1');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Type: application/vnd.ms-excel');
+        header("Content-Disposition: attachment;filename=\"{$filename}\"");
+        header('Cache-Control: max-age=0');
+        echo $output;
+        exit();
+        break;
     case 'countdb':
         if ( !isset( $_POST['country_id'] ) ) {
             $_SESSION['error'] = "You must select a country to download.";
