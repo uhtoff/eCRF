@@ -10,7 +10,6 @@ require( $path . '/libs/serverconfig.php');
 addIncludePath('/classes');
 addIncludePath('/addons');
 
-$db = 'prism_db';
 $trial = 'PRISM';
 Config::set('userdb', $db);
 Config::set('database', $db);
