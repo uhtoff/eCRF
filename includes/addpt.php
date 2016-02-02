@@ -1,7 +1,7 @@
 <?php
 $page = "core";
 
-echo '<h3>Randomise a test patient:</h3>';
+echo '<h3>Randomise a patient:</h3>';
 echo "<br/>";
 
 $form = new HTMLForm( 'addcore.php', 'post' );
