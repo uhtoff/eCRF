@@ -20,6 +20,8 @@ if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
 	$login = $user->login( $_POST['username'], $_POST['password'] );
 	if ( $login ) {
 		$_SESSION['user'] = $user;
+	} else {
+		exit();
 	}
 }
 header( 'Location:index.php' );
