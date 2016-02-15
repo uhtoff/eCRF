@@ -76,7 +76,7 @@ if ( isset($user) && is_null( $page ) ) {
     if ( !$centre->infolock && $user->isLocalAdmin() && !$trial->checkComplete('siteinfo',$centre) ) {
         echo "<div class=\"alert alert-warning\">";
         echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
-        echo "Please go to Admin -> Site Information and complete the one-time hospital information form there.";
+        echo "Please go to Admin → Edit Site Information and complete the one-time hospital information form there.";
         echo "</div>";
     }
 }
