@@ -8,32 +8,36 @@ if ( isset( $_POST['centreSelect'] ) && is_numeric( $_POST['centreSelect'] ) ) {
         $form = new HTMLForm( 'process.php', 'post' );
         $fields = $trial->getFormFields( $page );
         $form->processFields( $fields, $centreEdit );
-        $sql = "SELECT units.number, units.name FROM units WHERE number IN ( SELECT number FROM formFields
-                LEFT JOIN units ON units.number=formFields.fieldname
-                GROUP BY units.number )
-                GROUP BY units.number
-                HAVING count(units.number)>1";
-        $numbers = DB::cleanQuery( $sql );
-        if ( $numbers->getRows() ) {
-            $defUnits = $centreEdit->getUnits();
-            foreach( $numbers->rows as $row ) {
-                $input = $form->addInput('select',"units[{$row->number}]");
-                $input->addLabel("Units for {$row->name}");
-                $sql = "SELECT id, unit FROM units
-            WHERE number = ?
-            ORDER BY unitorder";
-                $pA = array('s',$row->number);
-                $units = DB::cleanQuery($sql,$pA);
-                $options = array();
-                foreach( $units->rows as $unitRow ) {
-                    $options[$unitRow->id] = $unitRow->unit;
+        if ( $user->isCentralAdmin() ) {
+            $sql = "SELECT units.number, units.name FROM units WHERE number IN ( SELECT number FROM formFields
+                    LEFT JOIN units ON units.number=formFields.fieldname
+                    GROUP BY units.number )
+                    GROUP BY units.number
+                    HAVING count(units.number)>1";
+            $numbers = DB::cleanQuery( $sql );
+            if ( $numbers->getRows() ) {
+                $defUnits = $centreEdit->getUnits();
+                foreach( $numbers->rows as $row ) {
+                    $input = $form->addInput('select',"units[{$row->number}]");
+                    $input->addLabel("Units for {$row->name}");
+                    $sql = "SELECT id, unit FROM units
+                WHERE number = ?
+                ORDER BY unitorder";
+                    $pA = array('s',$row->number);
+                    $units = DB::cleanQuery($sql,$pA);
+                    $options = array();
+                    foreach( $units->rows as $unitRow ) {
+                        $options[$unitRow->id] = $unitRow->unit;
+                    }
+                    $input->addOption($options, true);
+                    if ( isset($defUnits[$row->number]) ) {
+                        $input->addValue($defUnits[$row->number]['units_id']);
+                    }
+                    $input->setMand();
                 }
-                $input->addOption($options, true);
-                if ( isset($defUnits[$row->number]) ) {
-                    $input->addValue($defUnits[$row->number]['units_id']);
-                }
-                $input->setMand();
             }
+        } else {
+            $form->disableInput('sitereg-language_code');
         }
         if ( isset( $_SESSION['inputErr'] ) ) { // If any errors then add them to the form
             $form->addErrors( $_SESSION['inputErr'] );
