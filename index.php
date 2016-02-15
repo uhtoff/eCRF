@@ -71,15 +71,15 @@ if ( isset( $_SESSION['info'] ) && $_SESSION['info'] ) {
     echo "</div>";
     unset( $_SESSION['info'] );
 }
-//if ( isset($user) && is_null( $page ) ) {
-//    $centre = new Centre($user->getCentre());
-//    if ( !$centre->infolock && $user->isLocalAdmin() && !$trial->checkComplete('siteinfo',$centre) ) {
-//        echo "<div class=\"alert alert-warning\">";
-//        echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
-//        echo "Please go to Admin -> Site Information and complete the one-time hospital information form there.";
-//        echo "</div>";
-//    }
-//}
+if ( isset($user) && is_null( $page ) ) {
+    $centre = new Centre($user->getCentre());
+    if ( !$centre->infolock && $user->isLocalAdmin() && !$trial->checkComplete('siteinfo',$centre) ) {
+        echo "<div class=\"alert alert-warning\">";
+        echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
+        echo "Please go to Admin -> Site Information and complete the one-time hospital information form there.";
+        echo "</div>";
+    }
+}
 if ( isset($user) && is_null( $page ) ) {
     $centre = new Centre($user->getCentre());
     if ( $centre->isLocked() ) {
