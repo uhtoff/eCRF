@@ -514,11 +514,19 @@ _END;
         return $showPage;
     }
 	public function writeDataNav() {
+        if ( isset( $this->user ) ) {
+            $loggedin = $this->user->isLoggedIn();
+            $privilege = $this->user->getPrivilege();
+        } else {
+            $loggedin = 0;
+            $privilege = 99;
+        }
         $sql = "SELECT pages.id as id, name, IFNULL( label_text, pages.label ) as label_text, firstSub FROM pages
 			LEFT JOIN pages_labels ON pages_id = pages.id AND language_code = '{$this->language}'
-            WHERE type='data' AND subPage IS NULL AND active = 1  
+            WHERE type='data' AND privilege_id >= ? AND subPage IS NULL AND active = 1
             ORDER by pageOrder";
-        $result = DB::query( $sql );
+        $pA = array('i',$privilege);
+        $result = DB::query( $sql, $pA );
 		if ( $result->getRows() ) {
 			echo "<ul class=\"nav nav-tabs\">\n";
 			foreach( $result->rows as $row ) {
@@ -541,10 +549,17 @@ _END;
 		}
 	}
     public function writeSubDataNav() {
+        if ( isset( $this->user ) ) {
+            $loggedin = $this->user->isLoggedIn();
+            $privilege = $this->user->getPrivilege();
+        } else {
+            $loggedin = 0;
+            $privilege = 99;
+        }
         $sql = "SELECT id, name, label FROM pages 
-                WHERE type='data' AND subPage = ? AND active = 1 
+                WHERE type='data' AND subPage = ? AND privilege_id >= ? AND active = 1
                 ORDER BY pageOrder";
-        $pA = array('s',$this->getParentPage());
+        $pA = array('s',$this->getParentPage(), $privilege);
         $result = DB::query($sql,$pA);
 		if ( $result->getRows() ) {
 			echo "<ul class=\"nav nav-tabs\">\n";
