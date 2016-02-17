@@ -559,7 +559,7 @@ _END;
         $sql = "SELECT id, name, label FROM pages 
                 WHERE type='data' AND subPage = ? AND privilege_id >= ? AND active = 1
                 ORDER BY pageOrder";
-        $pA = array('s',$this->getParentPage(), $privilege);
+        $pA = array('si',$this->getParentPage(), $privilege);
         $result = DB::query($sql,$pA);
 		if ( $result->getRows() ) {
 			echo "<ul class=\"nav nav-tabs\">\n";
