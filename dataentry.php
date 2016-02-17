@@ -39,7 +39,7 @@ $link_id = $trial->addRecord();
 $include = $trial->checkPageLogin( $page ); // Generate correct include file, assuming user has correct privilege
 
 while ( !$include && $trial->getNextPage($page) ) { // Allows a page in the middle to have a higher privilege and be skipped over with a lower privilege
-    $page = $trial->getNextPage($page);
+    $page = $trial->getNextPage($page, true);
     $include = $trial->checkPageLogin($page);
 }
 
