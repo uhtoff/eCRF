@@ -80,8 +80,17 @@ try {
                 throw new Exception( "You have tried to manipulate a record from another centre." );
             }
         }
-        
-        if ( $trial->checkPageLogin( $page ) ) { // Check that the user has the privilege to access this page
+
+        $flagAccess = false;
+
+        $flagAccess = $trial->checkPageLogin( $page ); // Generate correct include file, assuming user has correct privilege
+
+        while ( !$flagAccess && $trial->getNextPage($page) ) { // Allows a page in the middle to have a higher privilege and be skipped over with a lower privilege
+            $page = $trial->getNextPage($page, true);
+            $flagAccess = $trial->checkPageLogin($page);
+        }
+
+        if ( $flagAccess ) { // Check that the user has the privilege to access this page
             
             switch( $_POST['request'] ) {
                 case 'addFlag':
