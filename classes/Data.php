@@ -29,7 +29,7 @@ class Data extends DBObject {
         $getFlag = false;
         $sql = "SELECT flagType_id, flagText FROM flag 
             WHERE link_id = ? AND field = ?";
-        $field = "{$page}_{$fieldName}";
+        $field = "{$page}-{$fieldName}";
         $pA = array('is', $_SESSION['user']->isLinked(), $field);
         $result = DB::query($sql, $pA);
         if ( $result->getRows() ) {
