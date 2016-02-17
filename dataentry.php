@@ -49,6 +49,8 @@ if ( !$link_id || !isset( $include ) || $include != $page ) { // If include isn'
 	exit();
 }
 
+$trial->setPage($page);
+
 $trial->writeHead();
 
 echo "<body>";
