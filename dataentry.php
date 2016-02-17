@@ -176,6 +176,7 @@ if ( $page == 'signpt' ) {
                     $rule = NULL;
                 }
                 if( $field->encrypted ) {
+                    continue;
                     $td = new Encrypt($user->getKey());
                     $row->old_value = $td->decrypt($row->old_value);
                     $row->new_value = $td->decrypt($row->new_value);

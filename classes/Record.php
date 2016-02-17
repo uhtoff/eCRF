@@ -5,6 +5,9 @@
  * @author Russ
  */
 class Record extends DBObject {
+    /**
+     * @var DBObject[]
+     */
     private $objects; 
 // To manage the link table - plan to add a currUser field to lock the record, if so then to get rid of last user/last mod as audit table now present
 	 public function preSignRecord() {
