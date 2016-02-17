@@ -2,7 +2,7 @@
 require_once( 'setup.php' );
 session_start();
 
-$page = "core";
+$page = "addpt";
 $trial = new eCRF( $page );
 
 if ( isset( $_SESSION['user'] ) ) {
@@ -38,6 +38,13 @@ if ( !$include ) {
 	header( "Location:index.php" );
 	exit();
 }
+
+// Reset page to core rather than the addpt used for security
+// Allows for different permissions to add confidential patient data and to view it
+
+$page = 'core';
+
+$trial->setPage($page);
 
 $trial->addRecord();
 
