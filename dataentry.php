@@ -38,6 +38,11 @@ $link_id = $trial->addRecord();
 
 $include = $trial->checkPageLogin( $page ); // Generate correct include file, assuming user has correct privilege
 
+while ( !$include && $trial->getNextPage($page) ) { // Allows a page in the middle to have a higher privilege and be skipped over with a lower privilege
+    $page = $trial->getNextPage($page);
+    $include = $trial->checkPageLogin($page);
+}
+
 if ( !$link_id || !isset( $include ) || $include != $page ) { // If include isn't set or doen't equal page then go back to index as user not validated
 	$_SESSION['error'] = "An error has occurred please try again";
     header( 'Location:index.php' );
