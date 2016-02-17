@@ -669,7 +669,7 @@ _END;
 		$pA = array( 's', $page );
         $result = DB::query( $sql, $pA );
 		if ( $result->getRows() ) {
-            if ( !$this->parseBranches($result->id) || ( $showIfComplete || $this->checkComplete($result->name) ) ) {
+            if ( !$this->parseBranches($result->id) || ( !$showIfComplete && $this->checkComplete($result->name) ) ) {
                 // If the next page isn't supposed to be shown or is complete then recurse
                 $getNextPage = $this->getNextPage( $result->name );
             } elseif ( $result->firstSub ) {
