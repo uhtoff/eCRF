@@ -228,8 +228,8 @@ jQuery( function() {
 	$( '#searchTable' ).dataTable( {
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
-        "aoColumns": [ null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
-        "aaSorting": [[ 2, "asc" ], [ 3, "asc"], [5, "desc"]],
+        "aoColumns": [ null, null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
+        "aaSorting": [[ 1, "asc" ], [ 2, "asc"]],
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		}
