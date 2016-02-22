@@ -222,7 +222,9 @@ jQuery( function() {
     $( "input:radio[name=searchpt-link_id]" ).click( function() { // Click handler on radio Button in worklist
         changeSelect(this);
     });
-	
+    // @TODO Update to DTables latest
+	//$.fn.dataTable.moment( 'Do MMM YYYY, HH:mm' );
+
 	$( '#searchTable' ).dataTable( {
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
@@ -236,8 +238,8 @@ jQuery( function() {
     $( '#searchTableAll' ).dataTable( {
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
-        "aoColumns": [ null, null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
-        "aaSorting": [[ 2, "asc" ], [ 3, "asc"], [6, "desc"]],
+        "aoColumns": [ null, null, null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
+        "aaSorting": [[ 1, "asc" ], [ 2, "asc"], [3, "asc"]],
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		}

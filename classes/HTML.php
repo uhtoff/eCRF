@@ -79,7 +79,9 @@ _END;
                     case "dataTables":
                         echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/css/jquery.dataTables.css\">";
                         echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$docRoot}/css/dTablebs.css\">";
-                        echo "<script type=\"text/javascript\" charset=\"utf-8\" src=\"https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/jquery.dataTables.min.js\"></script>"; 
+                        echo "<script type=\"text/javascript\" charset=\"utf-8\" src=\"https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/jquery.dataTables.min.js\"></script>";
+//						echo "<script type=\"text/javascript\" charset=\"utf-8\" src=\"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js\"></script>";
+//						echo "<script type=\"text/javascript\" charset=\"utf-8\" src=\"https://cdn.datatables.net/plug-ins/1.10.11/sorting/datetime-moment.js\"></script>";
                         echo "<script type=\"text/javascript\" charset=\"utf-8\" src=\"{$docRoot}/js/dTablebs.js\"></script>";
                         break;
 					case "script":
