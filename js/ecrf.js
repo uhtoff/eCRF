@@ -229,7 +229,7 @@ jQuery( function() {
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
         "aoColumns": [ null, null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
-        "aaSorting": [[ 1, "asc" ], [ 7, "desc"]],
+        "aaSorting": [[ 1, "asc" ], [ 6, "desc"]],
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		}
@@ -239,7 +239,7 @@ jQuery( function() {
         "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
         "aoColumns": [ null, null, null, null, null, null, null, {"bVisible":false, "bSearchable":false} ],
-        "aaSorting": [[ 1, "asc" ], [ 2, "asc"], [8, "desc"]],
+        "aaSorting": [[ 1, "asc" ], [ 2, "asc"], [7, "desc"]],
 		"oLanguage": {
 			"sLengthMenu": "_MENU_ records per page"
 		}
