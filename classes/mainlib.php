@@ -62,7 +62,7 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
                     link.presigned AS presigned,
                     link.lastmod AS lastmod,
 					centre.id AS centre_id,
-					MIN( coreAudit.time ) AS time_entered
+					MIN( DATE(coreAudit.time) ) AS time_entered
 				FROM link 
 					INNER JOIN core ON link.core_id = core.id 
 					INNER JOIN centre ON core.centre_id = centre.id
@@ -174,7 +174,7 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
                     link.lastmod AS lastmod,
                     country.name AS country,
 					centre.id AS centre_id,
-					MIN( coreAudit.time ) AS time_entered
+					MIN( DATE(coreAudit.time) ) AS time_entered
 				FROM link 
 					INNER JOIN core ON link.core_id = core.id 
 					INNER JOIN centre ON core.centre_id = centre.id
