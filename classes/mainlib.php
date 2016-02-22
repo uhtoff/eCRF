@@ -61,11 +61,14 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
 					link.signed AS signed,
                     link.presigned AS presigned,
                     link.lastmod AS lastmod,
-					centre.id AS centre_id
+					centre.id AS centre_id,
+					MIN( DATE(coreAudit.time) ) AS time_entered
 				FROM link 
 					INNER JOIN core ON link.core_id = core.id 
-					INNER JOIN centre ON core.centre_id = centre.id 
-                WHERE centre.id = ?";
+					INNER JOIN centre ON core.centre_id = centre.id
+					LEFT JOIN coreAudit ON coreAudit.table_id = core.id
+                WHERE centre.id = ?
+                GROUP BY link.id";
             $pA = array('i', $user->getCentre() );
             $result = DB::query($sql, $pA);
             break;
@@ -170,12 +173,15 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
                     link.presigned AS presigned,
                     link.lastmod AS lastmod,
                     country.name AS country,
-					centre.id AS centre_id
+					centre.id AS centre_id,
+					MIN( DATE(coreAudit.time) ) AS time_entered
 				FROM link 
 					INNER JOIN core ON link.core_id = core.id 
 					INNER JOIN centre ON core.centre_id = centre.id
-                    INNER JOIN country ON centre.country_id = country.id 
-				WHERE country.id = ?";
+                    INNER JOIN country ON centre.country_id = country.id
+                    LEFT JOIN coreAudit ON coreAudit.table_id = core.id
+				WHERE country.id = ?
+				GROUP BY link.id";
 			$centre = new Centre($user->getCentre());
             $pA = array('i',$centre->get('country_id'));
             $result = DB::query($sql, $pA);
@@ -195,16 +201,20 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
                     link.presigned AS presigned,
                     link.lastmod AS lastmod,
                     country.name AS country,
-					centre.id AS centre_id
+					centre.id AS centre_id,
+					MIN( coreAudit.time ) AS time_entered
 				FROM link 
 					INNER JOIN core ON link.core_id = core.id 
 					INNER JOIN centre ON core.centre_id = centre.id
-                    INNER JOIN country ON centre.country_id = country.id ";
+                    INNER JOIN country ON centre.country_id = country.id
+                    LEFT JOIN coreAudit ON coreAudit.table_id = core.id ";
              if ( $centre ) {
-                $sql .= "WHERE centre.id = ?";
+                $sql .= "WHERE centre.id = ? ";
+                 $sql .= "GROUP BY link.id";
             $pA = array('i',$centre);
             $result = DB::query($sql, $pA);
             } else {
+                 $sql .= "GROUP BY link.id";
                 $result = DB::query($sql);
                 }
             break;
@@ -274,11 +284,12 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
         if ( $type == 'all' ) echo "All";
         echo '" class="table table-striped table-bordered table-hover"><thead><tr><th scope="col">' . Config::get('idName') . '</th><th scope="col">Centre</th>';
         if ( $type == 'all' ) echo '<th scope="col">Country</th>';
-        echo '<th scope="col">Completed?</th><th scope="col">Signed?</th><th scope="col">Action</th><th scope="col">Last modified</th></tr></thead>';
+        echo '<th scope="col">Date Entered</th><th scope="col">Completed?</th><th scope="col">Signed?</th><th scope="col">Action</th><th scope="col">Last modified</th></tr></thead>';
 		echo "<tbody>\n";
 		for( $i = 0; $i < $result->num_rows; $i++ ) {
 			echo '<tr class="clickable"><td>' , HTML::clean( $result->rows[$i]->trialid ) , '</td><td>' , HTML::clean( $result->rows[$i]->name ) , '</td>';
             if ( $type == 'all' ) echo "<td>{$result->rows[$i]->country}</td>";
+            echo "<td>{$result->rows[$i]->time_entered}</td>";
             echo '<td>';
 			echo $result->rows[$i]->presigned == 1 ? 'Yes' : 'No';
             echo '</td><td >';
