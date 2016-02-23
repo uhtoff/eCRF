@@ -78,7 +78,7 @@ switch( $include ) {
 
         $resp = json_decode($result);
 
-		if (!$resp->success ) {
+		if ( !$resp->success ) {
 			// What happens when the CAPTCHA was entered incorrectly
 			$_SESSION['error'] = "The CAPTCHA was entered incorrectly. Please try again.";
 		} else {   

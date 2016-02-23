@@ -93,6 +93,9 @@ class HTMLInput extends HTMLObject {
 			case 'checkbox':
 				$this->addValue = array();
 				break;
+			case 'confirmation':
+				$this->addOption('I confirm the statement', true);
+				break;
 			default:
 				$this->setSize( 'input-medium' );
 				break;
@@ -522,6 +525,7 @@ class HTMLInput extends HTMLObject {
 				}
 				break;
 			case 'checkbox':
+			case 'confirmation':
 				foreach( $this->options as $v => $o ) {
 					$html .= "\n";
 					$html .= "<label class=\"checkbox\">";
