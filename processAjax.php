@@ -57,6 +57,38 @@ try {
                 echo json_encode( $countryArr );
                 exit();
             }
+        } elseif ( $_POST['request'] == 'emailList' ) {
+            $sql = "SELECT email FROM user LEFT JOIN centre ON user.centre_id = centre.id";
+            $whereArr = array();
+            $params = array();
+            if ( isset($_POST['privilege']) && $_POST['privilege'] ) {
+                $whereArr[] = 'privilege_id=?';
+                $params[] = $_POST['privilege'];
+            }
+            if ( isset($_POST['country']) && $_POST['country'] ) {
+                $whereArr[] = 'centre.country_id=?';
+                $params[] = $_POST['country'];
+            }
+            if ( isset($_POST['centre']) && $_POST['centre'] ) {
+                $whereArr[] = 'centre_id=?';
+                $params[] = $_POST['centre'];
+            }
+            if ( !empty( $whereArr ) ) {
+                $sql .= " WHERE ";
+                $sql .= implode(' AND ',$whereArr);
+                $numParam = count($params);
+                $paramType = str_pad('',$numParam,'i');
+                array_unshift($params,$paramType);
+                $result = DB::query($sql, $params);
+            } else {
+                $result = DB::query($sql);
+            }
+            $emailArr = array();
+            if ( $result->getRows() ) {
+                $emailArr = $result->getArray('email');
+            }
+            echo json_encode($emailArr);
+            exit();
         }
         
         $trial = new eCRF( $page );
