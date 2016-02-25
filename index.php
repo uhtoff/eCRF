@@ -94,9 +94,11 @@ if ( $include ) {
     require( "./includes/{$include}.php" );	
 } else {
     echo $trial->getWelcome();
-
+    if ( $trial->randomisationOffline() ) {
+        echo "<h4>Apologies, but randomisation is currently paused, it should be resumed soon.</h4>";
+    }
     if ( $trial->isOffline() ) {
-        echo "<h2>The site is currently offline for maintenance</h2>";
+        echo "<h2>The site is currently offline for maintenance.</h2>";
     } else if ( $loggedIn ) {
 /*        $result = DB::query( "SELECT title, content, time, forename, surname FROM news INNER JOIN user ON news.user_id = user.id ORDER BY time DESC LIMIT 0, 4" );
         if ( $result->getRows() ) {
