@@ -201,7 +201,7 @@ class HTMLForm extends HTMLObject {
 			$input->makeReadOnly();
 		}
     }
-	public function writeHTML( $justFields = FALSE ) {
+	public function writeHTML( $justFields = FALSE, $noSubmit = FALSE ) {
         $html = '';
         if ( !$justFields ) {
             $html = "<form action=\"{$this->clean( $this->action )}\" method=\"{$this->clean( $this->method )}\" ";
@@ -240,7 +240,9 @@ class HTMLForm extends HTMLObject {
 		}
 		$html .= "\n";
         if ( !$justFields ) {
-            $html .= $this->writeActions();
+			if ( !$noSubmit ) {
+				$html .= $this->writeActions();
+			}
             $html .= "\n</form>";
         }
 		return $html;
