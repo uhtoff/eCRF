@@ -193,6 +193,26 @@ jQuery( function() {
             e.preventDefault();
         }); 
     }
+
+	if ( page === "emailgroup" ) {
+		$.post( "processAjax.php",
+			{ page: page,
+				request: 'emailList'},
+			function( data ) {
+				addEmailList(data);
+			}, 'json' );
+		$('select').change( function( e ) {
+			$.post( "processAjax.php",
+				{ page: page,
+					request: 'emailList',
+					country: $('select[name=emailgroup-country]').val(),
+					centre: $('select[name=emailgroup-centre]').val(),
+					privilege: $('select[name=emailgroup-privilege]').val() },
+				function( data ) {
+					addEmailList(data);
+				}, 'json' );
+		});
+	}
    
 	$.post( "processAjax.php", 
 			{ page: page,
@@ -850,6 +870,11 @@ var leftInput = function ( e ) {
 		}
 	}, 1 );
 	return dfd.promise();
+}
+
+var addEmailList = function( d ) {
+	var emails = d.join('; ');
+	$('.emailAddresses').text(emails);
 }
 
 var addValidation = function( d ) {
