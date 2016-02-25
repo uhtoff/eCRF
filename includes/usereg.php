@@ -48,15 +48,28 @@ if ( $showSearch ) {
         }
         echo "<form method=\"POST\" action=\"index.php?page=usereg\">";
         echo "<table class=\"table table-striped table-bordered table-hover dataTable\">";
-        echo "<thead><tr><th>Name</th><th>Centre</th><th>Country</th><th>Privilege</th>";
+        echo "<thead><tr><th>Name</th>";
+        if ( $user->isRoot() ) {
+            echo "<th>Username</th>";
+        }
+        if ( $user->isCentralAdmin() ) {
+            echo "<th>Email</th>";
+        }
+        echo "<th>Centre</th><th>Country</th><th>Privilege</th>";
         if ( !$user->isDataEntry() ) {
             echo "<th>Select</th>";
         }
         echo "</tr></thead>";
         echo "<tbody>";
         foreach( $userSearch->rows as $row ) {
-            echo "<tr class=\"clickable\"><td>{$row->forename} {$row->surname}</td>
-                <td>{$row->centreName}</td>
+            echo "<tr class=\"clickable\"><td>{$row->forename} {$row->surname}</td>";
+            if ( $user->isRoot() ) {
+                echo "<td>{$row->username}</td>";
+            }
+            if ( $user->isCentralAdmin() ) {
+                echo "<td>{$row->email}</td>";
+            }
+            echo "<td>{$row->centreName}</td>
                 <td>{$row->countryName}</td>
                 <td>{$row->privilegeName}</td>";
             if ( !$user->isDataEntry() ) { 

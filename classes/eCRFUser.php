@@ -87,6 +87,9 @@ class eCRFUser extends User {
     public function isCentralAdmin() {
         return ( $this->getPrivilege() <= 5 );
     }
+    public function isRoot() {
+        return ( $this->getPrivilege() === 1 );
+    }
     public function accessAudit() {
         $accessAudit = false;
         if ( $this->getPrivilege() <= 15 ) {
