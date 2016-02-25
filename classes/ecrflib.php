@@ -1171,6 +1171,11 @@ class eCRF extends Trial {
     public function isOffline() {
         return $this->offline;
     }
+    public function randomisationOffline() {
+        $sql = "SELECT active FROM pages WHERE name = 'addpt'";
+        $result = DB::query( $sql );
+        return !$result->active;
+    }
     public function addAdverseEvent($ae)
     {
         $sql = "INSERT INTO aelink (adverseevent_id, link_id) VALUES ( ?, ? )";
