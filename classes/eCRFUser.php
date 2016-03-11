@@ -198,7 +198,7 @@ class eCRFUser extends User {
                 case 'forgotpass':
                     $subject = "Trial password reset";
                     $message = "<p>Dear {$contact->forename},</p>";
-                    $message .= "<p>{$this->forename} {$this->surname} from {$centre} has requested their password to be reset, if they are a valid user please log in at www.isos.org.uk/database and validate them from the 'User Admin' option in the menu.</p>";
+                    $message .= "<p>{$this->forename} {$this->surname} from {$centre} has requested their password to be reset, if they are a valid user please log in at https://database.prismtrial.org and validate them from the 'User Admin' option in the menu.</p>";
                     $message .= "<p>Best wishes,</p>";
                     $message .= "<p>Trial admin</p>";
                     $message .= "<p>Please note, this email address is not monitored, any problems email the trial co-ordinator</p>";
