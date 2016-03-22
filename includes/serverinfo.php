@@ -1,6 +1,9 @@
 <?php
-$sql = "SELECT NOW() as mysql_time, @@global.time_zone as global_tz, @@session.time_zone as session_tz, @@character_set_database as charset, @@collation_database as collation";
+$sql = "SELECT VERSION() as mysql_version, NOW() as mysql_time, @@global.time_zone as global_tz, @@session.time_zone as session_tz, @@character_set_database as charset, @@collation_database as collation";
 $mysql_settings = DB::query($sql);
+echo "<p>mySQL version is {$mysql_settings->mysql_version}</p>";
+echo "<p>PHP version is " . phpversion() . "</p>";
+echo "<hr/>";
 echo "<p>mySQL clock set to : " . $mysql_settings->mysql_time . "</p>";
 echo "<p>mySQL global TZ : " . $mysql_settings->global_tz . "</p>";
 echo "<p>mySQL session TZ : " . $mysql_settings->session_tz . "</p>";
