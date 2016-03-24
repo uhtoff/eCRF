@@ -30,4 +30,8 @@ class Violation extends Data
     {
         $this->active = false;
     }
+    public function isActive()
+    {
+        return $this->active;
+    }
 }

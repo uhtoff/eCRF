@@ -40,32 +40,36 @@ if ( $result->getRows() ) {
 		$e = new eCRF('violation');
 		$e->addRecord($rowv->link_id);
 		foreach($e->getViolations() as $v) {
-			echo "<tr class=\"clickable\"><td>{$rowv->centre_name}</td><td>{$rowv->trialid}</td>";
-			$typearray = array('no' => 'No CPAP',
+			if ( $v->isActive() ) {
+				echo "<tr class=\"clickable\"><td>{$rowv->centre_name}</td><td>{$rowv->trialid}</td>";
+				$typearray = array(
+					'no' => 'No CPAP',
 					'low' => 'Wrong CPAP level',
 					'stop' => 'Stopped CPAP',
-					'wrong' => 'CPAP on usual care patient');
-			$output = '<td><ul>';
-			foreach( $typearray as $type => $title ) {
-				if ($v->{$type.'cpap'}) {
-					$output .= "<li><b>{$title}</b></li>";
-					$output .= "<ul>";
-					foreach ($v->{$type.'cpapreason'} as $reason) {
-						$sql = "SELECT option_text FROM {$type}cpapreason WHERE option_value = ?";
-						$pA = array('i', $reason);
-						$result = DB::query($sql, $pA);
-						$output .= "<li>{$result->option_text}</li>";
+					'wrong' => 'CPAP on usual care patient'
+				);
+				$output = '<td><ul>';
+				foreach ($typearray as $type => $title) {
+					if ($v->{$type.'cpap'}) {
+						$output .= "<li><b>{$title}</b></li>";
+						$output .= "<ul>";
+						foreach ($v->{$type.'cpapreason'} as $reason) {
+							$sql = "SELECT option_text FROM {$type}cpapreason WHERE option_value = ?";
+							$pA = array('i', $reason);
+							$result = DB::query($sql, $pA);
+							$output .= "<li>{$result->option_text}</li>";
+						}
+						$output .= "</ul>";
 					}
-					$output .= "</ul>";
 				}
+				echo $output;
+				echo "</ul></td>";
+				echo "<td>{$v->violationdesc}</td>";
+				if ($user->isCentralAdmin()) {
+					echo "<td class='clickable'><input type='radio' name='vSelect' value='{$v->getID()}'/>";
+				}
+				echo "</tr>";
 			}
-			echo $output;
-			echo "</ul></td>";
-			echo "<td>{$v->violationdesc}</td>";
-			if ( $user->isCentralAdmin() ) {
-				echo "<td class='clickable'><input type='radio' name='vSelect' value='{$v->getID()}'/>";
-			}
-			echo "</tr>";
 		}
 	}
 	echo "</tbody></table>";

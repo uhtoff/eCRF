@@ -1206,7 +1206,7 @@ class eCRF extends Trial {
         $result = DB::query($sql, $pA);
         $this->violations = array();
         foreach ( $result->rows as $row ) {
-            $this->violations[] = new Data($row->violation_id, 'Violation');
+            $this->violations[] = new Violation($row->violation_id);
         }
         return $this->violations;
     }

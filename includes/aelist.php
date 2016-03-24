@@ -2,18 +2,17 @@
 $sql = "SELECT d.option_text as centre_name, link_id, adverseevent_id, trialid FROM aelink a
 LEFT JOIN link b ON a.link_id = b.id 
 LEFT JOIN core c ON b.core_id = c.id
-LEFT JOIN centre d ON c.centre_id = d.id
-WHERE active = 1";
+LEFT JOIN centre d ON c.centre_id = d.id";
 if ( $user->isCentralAdmin() ) {
-	$sql .= " OR active = 0 ORDER BY active DESC";
+	$sql .= " ORDER BY active DESC";
 	$result = DB::query($sql);
 } elseif ( $user->isRegionalAdmin() ) {
-	$sql .= " AND country_id = ?";
+	$sql .= " WHERE country_id = ?";
 	$centre = new Centre( $user->getCentre() );
 	$pA = array('i', $centre->get('country_id'));
 	$result = DB::query($sql, $pA);
 } else {
-	$sql .= " AND centre_id = ?";
+	$sql .= " WHERE centre_id = ?";
 	$pA = array('i', $user->getCentre());
 	$result = DB::query($sql, $pA);
 }
