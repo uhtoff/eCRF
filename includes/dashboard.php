@@ -1,6 +1,26 @@
 <?php
 $sql = "SELECT core.id, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime'";
 $result = DB::query($sql);
+$array = '';
+$numControl = $numIntervention = $total = 0;
+foreach ($result->rows as $row) {
+    if ($row->studygroup) {
+        $numIntervention++;
+    } else {
+        $numControl++;
+    }
+}
+
+$sql = "SELECT COUNT(core.id) as numRecruited, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime' GROUP BY dateOnly";
+$result = DB::query($sql);
+$startTarget = new DateTime('2016-02-02');
+$stepUp = new DateTime('2016-08-01');
+$endTarget = new DateTime('2018-12-01');
+$dateDiff = $startTarget->diff($endTarget,true);
+$months = $dateDiff->y * 12 + $dateDiff->m;
+$target = 4800;
+$shares = 6 + ( $months - 6 ) * 2;
+$sharedRecruit = floor($target/$shares);
 echo <<<_END
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -8,10 +28,10 @@ echo <<<_END
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          [{type:'date', label:'Day'}, 'Recruited'],
+          [{type:'date', label:'Day'}, 'Recruited', 'Recruited after Feb 2016', 'Target' ],
 _END;
-$array = '';
-$numControl = $numIntervention = $total = 0;
+$postFeb = 0;
+$recruitTarget = 0;
 foreach( $result->rows as $row ) {
     $recruitDate = DateTime::createFromFormat('Y-m-d',$row->dateOnly);
     if (!isset($date)) {
@@ -20,24 +40,37 @@ foreach( $result->rows as $row ) {
         $firstYear = $date->format('Y');
     }
     while ($recruitDate!=$date) {
+        if ( $date->format('d') == 1 ) {
+            if ( $date > $startTarget && $date <= $stepUp ) {
+                $recruitTarget += $sharedRecruit;
+            } else if ($date>$stepUp) {
+                $recruitTarget += ( $sharedRecruit * 2 );
+            }
+        }
         $array .= "[";
         $array .= "new Date({$date->format('Y')}, ";
         $array .= $date->format('m') - 1;
         $array .= ", {$date->format('d')})";
-        $array .= ",{$total}],";
+        $array .= ",{$total},{$postFeb},{$recruitTarget}],";
         $date->modify('+1 day');
     }
-    $total++;
-    if ($row->studygroup) {
-        $numIntervention++;
-    } else {
-        $numControl++;
+    $total+=$row->numRecruited;
+    if ( $date > $startTarget ) {
+        $postFeb+=$row->numRecruited;
+    }
+    if ( $date->format('d') == 1 ) {
+        if ( $date > $startTarget && $date <= $stepUp ) {
+            $recruitTarget += $sharedRecruit;
+        } else if ($date>$stepUp) {
+            $recruitTarget += ( $sharedRecruit * 2 );
+        }
     }
     $array .= "[";
     $array .= "new Date({$date->format('Y')}, ";
     $array .= $date->format('m') - 1;
     $array .= ", {$date->format('d')})";
-    $array .= ",{$total}],";
+    $array .= ",{$total},{$postFeb},{$recruitTarget}],";
+    $date->modify('+1 day');
 }
 $lastMonth = $date->format('m') - 1;
 $lastYear = $date->format('Y');
@@ -74,9 +107,12 @@ echo <<<_END
     </script>
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 _END;
+echo "<div><p>Total recruited: {$total}</p>";
+echo "<p>Total recruited post Feb 2016: {$postFeb}</p>";
 if ( $user->getPrivilege() == 1 ) {
-    echo "<div><p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p></div>";
+    echo "<p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p>";
 }
+echo "</div>";
 //$trial->simulateTrial();
 /*$sql = "SELECT COUNT(signed) as crfCount, SUM(signed) as numSigned FROM link";
 $crfs = DB::query($sql);
