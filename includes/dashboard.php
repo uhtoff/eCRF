@@ -1,4 +1,82 @@
 <?php
+$sql = "SELECT core.id, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime'";
+$result = DB::query($sql);
+echo <<<_END
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          [{type:'date', label:'Day'}, 'Recruited'],
+_END;
+$array = '';
+$numControl = $numIntervention = $total = 0;
+foreach( $result->rows as $row ) {
+    $recruitDate = DateTime::createFromFormat('Y-m-d',$row->dateOnly);
+    if (!isset($date)) {
+        $date = $recruitDate;
+        $firstMonth = $date->format('m') - 1;
+        $firstYear = $date->format('Y');
+    }
+    while ($recruitDate!=$date) {
+        $array .= "[";
+        $array .= "new Date({$date->format('Y')}, ";
+        $array .= $date->format('m') - 1;
+        $array .= ", {$date->format('d')})";
+        $array .= ",{$total}],";
+        $date->modify('+1 day');
+    }
+    $total++;
+    if ($row->studygroup) {
+        $numIntervention++;
+    } else {
+        $numControl++;
+    }
+    $array .= "[";
+    $array .= "new Date({$date->format('Y')}, ";
+    $array .= $date->format('m') - 1;
+    $array .= ", {$date->format('d')})";
+    $array .= ",{$total}],";
+}
+$lastMonth = $date->format('m') - 1;
+$lastYear = $date->format('Y');
+$array = rtrim($array, ',');
+echo $array;
+echo <<<_END
+        ]);
+
+        var options = {
+          title: 'Recruitment',
+          hAxis: {
+            title: 'Date',
+            ticks: [
+_END;
+while( $firstMonth != $lastMonth || $firstYear != $lastYear ) {
+    echo "new Date({$firstYear},{$firstMonth}),";
+    $firstMonth++;
+    if ( $firstMonth == 12 ) {
+        $firstMonth = 0;
+        $firstYear++;
+    }
+}
+echo "new Date({$lastYear},{$lastMonth})";
+echo <<<_END
+          ]},
+          vAxis: {
+            gridlines: { count:4 }
+           }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+_END;
+if ( $user->getPrivilege() == 1 ) {
+    echo "<div><p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p></div>";
+}
 //$trial->simulateTrial();
 /*$sql = "SELECT COUNT(signed) as crfCount, SUM(signed) as numSigned FROM link";
 $crfs = DB::query($sql);
