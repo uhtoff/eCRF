@@ -113,6 +113,13 @@ if ( $user->getPrivilege() == 1 ) {
     echo "<p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p>";
 }
 echo "</div>";
+$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM core RIGHT JOIN centre ON core.centre_id = centre.id GROUP BY centre_id";
+$result = DB::query($sql);
+echo "<table class='table table-striped table-bordered'><thead><th>Centre</th><th>Num recruited</th></thead><tbody>";
+foreach ($result->rows as $row) {
+    echo "<tr><td>$row->name</td><td>$row->numRecruited</td>";
+}
+echo "</tbody></table>";
 //$trial->simulateTrial();
 /*$sql = "SELECT COUNT(signed) as crfCount, SUM(signed) as numSigned FROM link";
 $crfs = DB::query($sql);
