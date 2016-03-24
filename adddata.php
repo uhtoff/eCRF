@@ -150,6 +150,8 @@ if ( $page == 'signpt' ) {
     unset($_SESSION['inputErr']);
     $ae = new Data(null, 'AdverseEvent');
     $complete = $trial->addUserInput($_POST, $ae);
+    $active = true;
+    $ae->set('active',$active);
     if ($complete) {
         $ae->saveToDB();
         $trial->addAdverseEvent($ae);

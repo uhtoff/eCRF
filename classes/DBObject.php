@@ -67,7 +67,6 @@ abstract class DBObject {
 
     public function __construct($id = NULL) {
         // Get basic class information from database and store in object
-//        $sql = "SELECT id, tableName, pKey FROM classes WHERE name = ?";
         if ( !$this->_className ) {
             $this->_className = get_class($this);
         }
@@ -79,11 +78,6 @@ abstract class DBObject {
                 $this->_table = DB::clean($result->tableName);
             $this->_pKey = DB::clean($result->pKey);
             // Get fields from database
-//            $sql = "SELECT name, subTableId, multiple, 
-//                encrypted, audit, readonly, autoload 
-//                FROM classFields WHERE classes_id = ?";
-//            $pA = array('i', $result->id);
-//            $result = DB::query($sql, $pA, $this->_db);
             $result = ObjectFactory::getDetails($this->_className);
             $this->addFields($result);
         }

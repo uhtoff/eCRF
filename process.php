@@ -929,6 +929,12 @@ switch( $include ) {
         echo $attachment;
         exit();
         break;
+    case 'violationlist':
+        $v = new Violation($_POST['vSelect']);
+        $v->makeInactive();
+        $v->saveToDB();
+        $_SESSION['message'] = "You have successfully removed the violation form.";
+        break;
 	default:
 		$_SESSION['error'] = "An error has occurred, please try again. Code - 0x01";
 		break;

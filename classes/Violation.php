@@ -22,4 +22,12 @@ class Violation extends Data
         }
         return false;
     }
+    public function makeActive()
+    {
+        $this->active = true;
+    }
+    public function makeInactive()
+    {
+        $this->active = false;
+    }
 }
