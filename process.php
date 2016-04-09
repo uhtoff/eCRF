@@ -167,28 +167,50 @@ switch( $include ) {
         exit();
         break;
 	case 'forgotpass':
-		$data = new eCRFUser();
-		$complete = $trial->addUserInput( $_POST, $data );
-		if ( $complete ) { // Has all the data been added correctly?
-			$id = $data->isUser(); // Check if entered user exists
-			if ( $id ) {
-				$user = new eCRFUser( $id );
-                $user->forgotPassword(); // Then set privilege ID to 99 and delete password to prevent the account from being used
-				$email = $user->writeEmail( $include ); // Generate email to their local admin to revalidate them
-				$mail = $trial->sendEmail( $email );
-				if ( $mail ) {					
-					$user->saveToDB();
-					$_SESSION['message'] = 'Thank you. You will receive an email with your new password once your reset instructions have been confirmed.'; // return with success message
-					header( "Location:index.php" );
-					exit();
-				} else {
-					$_SESSION['error'] = 'There has been an error in sending email to your local admin, please try again.';
-				}
-			} else {
-				$_SESSION['error'] = "User not found in database, please check for spelling mistakes and retry."; // Else return with 'not exists' message
-			}
-		}
-		$_SESSION[$include] = $data;
+        $url = 'https://www.google.com/recaptcha/api/siteverify';
+        $postData = array('secret' => '6LcEFQ8TAAAAAPv9Mt58PDA9mcBt3vhhDtevEc-v', 'response' => $_POST['g-recaptcha-response']);
+
+        // use key 'http' even if you send the request to https://...
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($postData),
+            ),
+        );
+        $context  = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+
+        $resp = json_decode($result);
+
+        if ( !$resp->success ) {
+            // What happens when the CAPTCHA was entered incorrectly
+            $_SESSION['error'] = "The CAPTCHA was entered incorrectly. Please try again.";
+        } else {
+            $data = new eCRFUser();
+            $complete = $trial->addUserInput($_POST, $data);
+            if ($complete) { // Has all the data been added correctly?
+                $id = $data->isUser(); // Check if entered user exists
+                if ($id) {
+                    $user = new eCRFUser($id);
+                    $user->forgotPassword(
+                    ); // Then set privilege ID to 99 and delete password to prevent the account from being used
+                    $email = $user->writeEmail($include); // Generate email to their local admin to revalidate them
+                    $mail = $trial->sendEmail($email);
+                    if ($mail) {
+                        $user->saveToDB();
+                        $_SESSION['message'] = 'Thank you. You will receive an email with your new password once your reset instructions have been confirmed.'; // return with success message
+                        header("Location:index.php");
+                        exit();
+                    } else {
+                        $_SESSION['error'] = 'There has been an error in sending email to your local admin, please try again.';
+                    }
+                } else {
+                    $_SESSION['error'] = "User not found in database, please check for spelling mistakes and retry."; // Else return with 'not exists' message
+                }
+            }
+        }
+		if ( isset($data) ) $_SESSION[$include] = $data;
 		header( "Location:index.php?page={$include}" );
 		exit();
 		break;
