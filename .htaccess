@@ -1,2 +1,5 @@
 ErrorDocument 404 /404redirect.php
 ErrorDocument 403 /403redirect.php
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{SERVER_NAME}/%$1 [R,L]

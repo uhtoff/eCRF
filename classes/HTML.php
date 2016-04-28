@@ -2,7 +2,7 @@
 Class HTML {
     const JQVER = '1.7.2'; 
     const JQUIVER = '1.10.4';
-	public static function header( $headArray=NULL, $docRoot = '' ) {
+	public static function header( $headArray=NULL, $docRoot = 'https://' ) {
 		echo <<<_END
 <!DOCTYPE html>
 <html lang="en">
