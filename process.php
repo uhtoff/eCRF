@@ -700,7 +700,7 @@ switch( $include ) {
             $output .= "\r\n";
         }
         $date = date('Y-m-d');
-        $filename = "UKCRN.{$date}.csv";
+        $filename = "CPMS.{$date}.csv";
         header('Pragma: public');
         header('Expires: -1');
         header('Content-Transfer-Encoding: binary');
