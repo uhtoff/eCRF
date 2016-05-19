@@ -63,6 +63,14 @@ class Centre extends DBObject {
     public function getCountry() {
         return $this->country_id;
     }
+
+    /**
+     * @return string Two letter language code
+     */
+    public function getLanguage()
+    {
+        return $this->language_code;
+    }
     public function deleteCentre() {
         $users = $this->getUsers();
         foreach ( $users as $user ) {

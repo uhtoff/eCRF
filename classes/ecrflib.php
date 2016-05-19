@@ -261,6 +261,13 @@ class Trial { // Object for all things just related to the trial/site (writing h
 		}
 		return isset( $this->user ) ? $this->user->isLinked() : NULL;
 	}
+
+    /**
+     * @return Record
+     */
+    public function getRecord() {
+        return $this->record;
+    }
     /*
      * return eCRFUser
      */
@@ -683,7 +690,7 @@ _END;
 					type, toggle, mandatory, size, class, readonly		 
 				FROM formFields
 				LEFT JOIN formFields_labels
-				ON formFields.id = formFields_id AND language_code = '{$this->language}' 
+				ON formFields.id = formFields_id AND language_code = '{$this->getRecord()->getLanguage()}' 
 				WHERE pages_name=? 
                 AND multiple IS NULL			
 				ORDER BY entryorder";

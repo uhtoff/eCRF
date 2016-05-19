@@ -83,6 +83,20 @@ class Record extends DBObject {
 	}
 
     /**
+     * Get the language the record is written in
+     * @return string Two-letter language code, returns 'en' if none set
+     */
+    public function getLanguage()
+    {
+        if ($this->getCentre()) {
+            $centre = new Centre($this->getCentre());
+            return $centre->getLanguage();
+        } else {
+            return 'en';
+        }
+
+    }
+    /**
      * @param string $page
      * @return Data|bool
      */
