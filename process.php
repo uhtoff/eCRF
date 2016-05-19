@@ -679,7 +679,7 @@ switch( $include ) {
         }
         break;
     case 'ukcrn':
-        $output = "StudyID,Acronym,InvestigatorName,InvestigatorID,SiteName,SiteID,StudyPatientID,StudyEntryDate,EntryEvent,EntryEventNo,RecruitType,RunningTotal,Gender,DOB,Ethnicity,Postcode\r\n";
+        $output = "Study Identifier,Study Acronym,Site Identifier,Site Name,Activity Date,Participant Type,Unique Participant ID,Activity Type\r\n";
         $sql = "SELECT link.id FROM link
   LEFT JOIN core ON link.core_id = core.id
   LEFT JOIN centre ON core.centre_id = centre.id
@@ -691,16 +691,13 @@ switch( $include ) {
             $record = new Record($row->id);
             $record->getAllData();
             $centre = new Centre($record->getCentre());
-            $output .= "20252,PRISM,";
-            $output .= "{$centre->getPIName()},";
-            $output .= ",";
-            $output .= "{$centre->name},,";
-            $output .= $record->getField('core', 'trialid') . ',';
+            $output .= "20252,PRISM,,";
+            $output .= "{$centre->name},";
             $output .= $record->getField('core','randdate') . ',';
-            $output .= "Randomisation,1,1,";
-            $output .= "{$count}";
+            $output .= "Participant with the relevant condition,";
+            $output .= $record->getField('core','trialid') . ',';
+            $output .= "Recruitment";
             $output .= "\r\n";
-            $count++;
         }
         $date = date('Y-m-d');
         $filename = "UKCRN.{$date}.csv";

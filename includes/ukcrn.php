@@ -1,7 +1,7 @@
 <?php
-echo "<p class=\"lead\">Download UKCRN Portfolio data</p>";
+echo "<p class=\"lead\">Download CPMS Report</p>";
 echo "<form action=\"process.php\" method=\"POST\">";
-echo "<p>Click the button below to get a csv of the UKCRN data</p>";
+echo "<p>Click the button below to get a csv of the CPMS report</p>";
 echo "<input type=\"hidden\" name=\"page\" value=\"{$page}\"/>";
 $_SESSION['csrfToken'] = $token = base64_encode( openssl_random_pseudo_bytes(32));
 echo "<input type=\"hidden\" name=\"csrfToken\" value=\"{$token}\"/>";
