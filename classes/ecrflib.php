@@ -517,7 +517,6 @@ _END;
                 }
             }
         }
-
         return $showPage;
     }
 	public function writeDataNav() {
@@ -697,8 +696,12 @@ _END;
 			$pA = array( 's', $page );			
         }
         $result = DB::query( $sql, $pA );
+        $excluded = $this->getExcludedFormFields();
         $counter = 1;
         foreach( $result->rows as $row ) {
+            if (in_array($row->id,$excluded)) {
+                continue;
+            }
             if ( !$row->fieldName ) {
                 $row->fieldName = $counter++;
             }
@@ -855,6 +858,48 @@ _END;
         $this->fields = $getFormFields;
 		return $getFormFields;
 	}
+    protected function getExcludedFormFields()
+    {
+        $excluded = array();
+        $sql = "SELECT * FROM formFields_branch";
+        $result = DB::query( $sql );
+        foreach( $result->rows as $row ) {
+            $property = false;
+            switch ( $row->object ) {
+                case 'Trial':
+                    $property = $this->{$row->property};
+                    break;
+                case 'Centre':
+                    if ( isset( $this->userCentre ) ) {
+                        $object = $this->userCentre;
+                        $property = $object->{$row->property};
+                    } else {
+                        $centreID = $this->getUserCentre();
+                        if ( $centreID ) {
+                            $object = $this->userCentre = new Centre ( $centreID );
+                            $property = $object->{$row->property};
+                        }
+                    }
+                    break;
+                default:
+                    if ($this->getRecord()) {
+                        $property = $this->getRecord()->getField($row->object, $row->property);
+                    }
+                    break;
+            }
+            if ( $property !== false ) {
+
+                if ( $row->operand == 'NOT' ) {
+                    if ( $property == $row->value ) {
+                        $excluded[] = $row->formFields_id;
+                    }
+                } elseif ( $property != $row->value ) {
+                    $excluded[] = $row->formFields_id;
+                }
+            }
+        }
+        return $excluded;
+    }
     public function getValRules( $page, $fieldName ) {
         $getValRules = NULL;
         $sql = "SELECT formFields.type as varType, value, operator, groupNum, 
