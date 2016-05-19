@@ -20,6 +20,9 @@ class Violation extends Data
                 return true;
             }
         }
+        if ($this->otherdeviation) {
+            return true;
+        }
         return false;
     }
     public function makeActive()

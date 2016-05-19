@@ -954,6 +954,12 @@ switch( $include ) {
         $v->saveToDB();
         $_SESSION['message'] = "You have successfully removed the violation form.";
         break;
+    case 'aelist':
+        $ae = new AdverseEvent($_POST['aeSelect']);
+        $ae->makeInactive();
+        $ae->saveToDB();
+        $_SESSION['message'] = "You have successfully removed the adverse event form.";
+        break;
 	default:
 		$_SESSION['error'] = "An error has occurred, please try again. Code - 0x01";
 		break;

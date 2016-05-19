@@ -1,5 +1,5 @@
 <?php
-$sql = "SELECT d.option_text as centre_name, link_id, c.trialid, v.active FROM violation v 
+$sql = "SELECT v.id as vid, d.option_text as centre_name, link_id, c.trialid, v.active FROM violation v 
 LEFT JOIN violationlink a ON v.id = a.violation_id 
 LEFT JOIN link b ON a.link_id = b.id 
 LEFT JOIN core c ON b.core_id = c.id
@@ -25,12 +25,12 @@ if ( $result->getRows() ) {
 	echo "<div class=\"container well\" style=\"background-color:#FFFFFF;\">";
 	echo "<h3>Protocol deviations</h3>";
 	if ( $user->isCentralAdmin() ) {
-		echo "<h5>If you wish to remove a violation form then please select and click 'Delete' - the form will be stored for audit purposes.</h5>";
+		echo "<h5>If you wish to remove a protocol deviation form then please select and click 'Delete' - the form will be stored for audit purposes.</h5>";
 		echo "<form action=\"process.php\" method=\"POST\">";
 	}
 	echo '<table class="table table-striped table-bordered table-hover dataTable"><thead>';
-	echo '<tr><th scope="col">Centre</th><th scope="col">' . Config::get('idName') . '</th><th scope="col">Violation</th>';
-    echo '<th scope="col">Description</th>';
+	echo '<tr><th scope="col">Centre</th><th scope="col">' . Config::get('idName') . '</th><th scope="col">Deviation</th>';
+    echo '<th scope="col">Description</th><th scope="col">Reported time</th>';
 	if ( $user->isCentralAdmin() ) {
 		echo '<th>Select</th>';
 	}
@@ -43,10 +43,10 @@ if ( $result->getRows() ) {
 			if ( $v->isActive() ) {
 				echo "<tr class=\"clickable\"><td>{$rowv->centre_name}</td><td>{$rowv->trialid}</td>";
 				$typearray = array(
-					'no' => 'No CPAP',
-					'low' => 'Wrong CPAP level',
-					'stop' => 'Stopped CPAP',
-					'wrong' => 'CPAP on usual care patient'
+					'no' => 'Participant in the intervention group did NOT receive CPAP',
+					'low' => 'CPAP started at a dose other than 5cmH2O',
+					'stop' => 'CPAP administered for less than 4 hours or with significant interruption',
+					'wrong' => 'Participant in the usual care group DID receive CPAP'
 				);
 				$output = '<td><ul>';
 				foreach ($typearray as $type => $title) {
@@ -63,8 +63,15 @@ if ( $result->getRows() ) {
 					}
 				}
 				echo $output;
+				if ($v->otherdeviation) {
+					echo "<li><b>Other protocol deviation</b></li>";
+				}
 				echo "</ul></td>";
 				echo "<td>{$v->violationdesc}</td>";
+				$sql = "SELECT `time` FROM violationAudit WHERE table_id = ? ORDER BY `time` ASC LIMIT 0,1";
+				$pA = array('i',$rowv->vid);
+				$result = DB::query($sql,$pA);
+				echo "<td>{$result->time}</td>";
 				if ($user->isCentralAdmin()) {
 					echo "<td class='clickable'><input type='radio' name='vSelect' value='{$v->getID()}'/>";
 				}
@@ -73,14 +80,15 @@ if ( $result->getRows() ) {
 		}
 	}
 	echo "</tbody></table>";
-	echo "<input type=\"hidden\" name='page' value='{$page}'/>";
-	$_SESSION['csrfToken'] = $token = base64_encode( openssl_random_pseudo_bytes(32));
-	echo "<input type=\"hidden\" name='csrfToken' value='{$token}'/>";
-	echo "<div class=\"form-actions\">
+	if ($user->isCentralAdmin()) {
+		echo "<input type=\"hidden\" name='page' value='{$page}'/>";
+		$_SESSION['csrfToken'] = $token = base64_encode(openssl_random_pseudo_bytes(32));
+		echo "<input type=\"hidden\" name='csrfToken' value='{$token}'/>";
+		echo "<div class=\"form-actions\">
 		<button type=\"submit\" class=\"btn btn-danger\">Delete</button>
-
 		</div>";
-	echo "</form>";
+		echo "</form>";
+	}
 	echo "</div>";
 } else {
 	echo "<h3>No protocol deviations recorded.</h3>";
