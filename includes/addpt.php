@@ -26,11 +26,6 @@ foreach( $fields['core-centre_id']['options'] as $key => $value ) {
     }
 }
 
-if ( $user->getCountry() == 34 ) {
-    unset($fields['core-forename']);
-    unset($fields['core-surname']);
-}
-
 $form->processFields( $fields, $data );
 if ( isset( $_SESSION['inputErr'] ) ) {
 	$form->addErrors( $_SESSION['inputErr'] );
