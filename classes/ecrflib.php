@@ -671,6 +671,16 @@ _END;
 		}
         return $getNextPage;
 	}
+    protected function getFormLanguage()
+    {
+        if ($this->getRecord()) {
+            return $this->getRecord()->getLanguage();
+        } elseif ($this->getUser()) {
+            return $this->getUser()->getLanguage();
+        } else {
+            return 'en';
+        }
+    }
 	public function getFormFields( $page = NULL, $multiple = false, $multiSuffix = NULL, $language = 'en' ) {
 		if ( !$page ) {
             $page = $this->getPage();
@@ -689,7 +699,7 @@ _END;
 					type, toggle, mandatory, size, class, readonly		 
 				FROM formFields
 				LEFT JOIN formFields_labels
-				ON formFields.id = formFields_id AND language_code = '{$this->getRecord()->getLanguage()}' 
+				ON formFields.id = formFields_id AND language_code = '{$this->getFormLanguage()}' 
 				WHERE pages_name=? 
                 AND multiple IS NULL			
 				ORDER BY entryorder";
