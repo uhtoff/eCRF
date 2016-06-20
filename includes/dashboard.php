@@ -42,7 +42,7 @@ foreach( $result->rows as $row ) {
         $firstMonth = $date->format('m') - 1;
         $firstYear = $date->format('Y');
     }
-    if ( $date > $startTarget ) {
+    if ( $date > $startTarget && $targetMonth == 2 ) {
         $endOfMonthTarget = 10;
         $monthTarget = 10;
     }
