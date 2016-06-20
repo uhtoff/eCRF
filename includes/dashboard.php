@@ -21,6 +21,9 @@ $months = $dateDiff->y * 12 + $dateDiff->m;
 $target = 4800;
 $shares = 6 + ( $months - 6 ) * 2;
 $sharedRecruit = floor($target/$shares);
+$targetMonth = 2;
+$endOfMonthTarget = 0;
+$monthTarget = 0;
 echo <<<_END
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -39,14 +42,29 @@ foreach( $result->rows as $row ) {
         $firstMonth = $date->format('m') - 1;
         $firstYear = $date->format('Y');
     }
+    if ( $date > $startTarget ) {
+        $endOfMonthTarget = 10;
+        $monthTarget = 10;
+    }
     while ($recruitDate!=$date) {
         if ( $date->format('d') == 1 ) {
-            if ( $date > $startTarget && $date <= $stepUp ) {
-                $recruitTarget += $sharedRecruit;
-            } else if ($date>$stepUp) {
-                $recruitTarget += ( $sharedRecruit * 2 );
+            if ( $date > $startTarget ) {
+                if ( $targetMonth <= 8 ) {
+                    $monthTarget = $targetMonth * 10;
+                    $endOfMonthTarget += $monthTarget;
+                    $targetMonth++;
+                } else {
+                    $monthTarget = 90;
+                    $endOfMonthTarget += $monthTarget;
+                }
             }
         }
+        $d = $date->format('d');
+        $m = $date->format('m');
+        $y = $date->format('Y');
+        $daysInMonth = cal_days_in_month(CAL_GREGORIAN,$m, $y);
+        $remainingDays = $daysInMonth-$d;
+        $recruitTarget = $endOfMonthTarget - floor($monthTarget*($remainingDays/$daysInMonth));
         $array .= "[";
         $array .= "new Date({$date->format('Y')}, ";
         $array .= $date->format('m') - 1;
@@ -59,12 +77,23 @@ foreach( $result->rows as $row ) {
         $postFeb+=$row->numRecruited;
     }
     if ( $date->format('d') == 1 ) {
-        if ( $date > $startTarget && $date <= $stepUp ) {
-            $recruitTarget += $sharedRecruit;
-        } else if ($date>$stepUp) {
-            $recruitTarget += ( $sharedRecruit * 2 );
+        if ( $date > $startTarget ) {
+            if ( $targetMonth <= 8 ) {
+                $monthTarget = $targetMonth * 10;
+                $endOfMonthTarget += $monthTarget;
+                $targetMonth++;
+            } else {
+                $monthTarget = 90;
+                $endOfMonthTarget += $monthTarget;
+            }
         }
     }
+    $d = $date->format('d');
+    $m = $date->format('m');
+    $y = $date->format('Y');
+    $daysInMonth = cal_days_in_month(CAL_GREGORIAN,$m, $y);
+    $remainingDays = $daysInMonth-$d;
+    $recruitTarget = $endOfMonthTarget - floor($monthTarget*($remainingDays/$daysInMonth));
     $array .= "[";
     $array .= "new Date({$date->format('Y')}, ";
     $array .= $date->format('m') - 1;
