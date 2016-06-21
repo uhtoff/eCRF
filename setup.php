@@ -10,11 +10,11 @@ require( $path . '/libs/serverconfig.php');
 addIncludePath('/classes');
 addIncludePath('/addons');
 
-$trial = 'PRISM';
+$trial = 'OPTIMISE II';
 Config::set('userdb', $db);
 Config::set('database', $db);
 Config::set('trial', $trial);
-Config::set('idName', 'PRISM ID');
+Config::set('idName', 'OPTIMISE II ID');
 
 if ( !DB::setDB($db) ) {
     exit( 'Unable to set database' );
@@ -22,5 +22,5 @@ if ( !DB::setDB($db) ) {
 
 require( 'ecrflib.php' );
 require( 'mainlib.php' );
-session_name('PRISM');
+session_name('OPTIMISEII');
 ?>
