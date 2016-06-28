@@ -152,7 +152,12 @@ foreach( $last30Result->rows as $row ) {
 }
 echo "<table class='table table-striped table-bordered'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
 foreach ($result->rows as $row) {
-    echo "<tr><td>$row->name</td><td>$row->numRecruited</td><td>{$last30[$row->name]}</td>";
+    if ( isset($last30[$row->name])) {
+        $last30Val = $last30[$row->name];
+    } else {
+        $last30Val = 0;
+    }
+    echo "<tr><td>$row->name</td><td>$row->numRecruited</td><td>{$last30Val}</td>";
 }
 echo "</tbody></table>";
 //$trial->simulateTrial();
