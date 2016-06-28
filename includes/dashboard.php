@@ -142,11 +142,17 @@ if ( $user->getPrivilege() == 1 ) {
     echo "<p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p>";
 }
 echo "</div>";
-$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM core RIGHT JOIN centre ON core.centre_id = centre.id GROUP BY centre_id";
+$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM core RIGHT JOIN centre ON core.centre_id = centre.id GROUP BY centre_id HAVING numRecruited > 0 ORDER BY centre.name";
 $result = DB::query($sql);
-echo "<table class='table table-striped table-bordered'><thead><th>Centre</th><th>Num recruited</th></thead><tbody>";
+$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id LEFT JOIN centre ON core.centre_id = centre.id WHERE field = 'randdatetime' AND `time` >= CURDATE() - INTERVAL 30 DAY GROUP BY centre.name";
+$last30Result = DB::query($sql);
+$last30 = array();
+foreach( $last30Result->rows as $row ) {
+    $last30[$row->name] = $row->numRecruited;
+}
+echo "<table class='table table-striped table-bordered'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
 foreach ($result->rows as $row) {
-    echo "<tr><td>$row->name</td><td>$row->numRecruited</td>";
+    echo "<tr><td>$row->name</td><td>$row->numRecruited</td><td>{$last30[$row->name]}</td>";
 }
 echo "</tbody></table>";
 //$trial->simulateTrial();
