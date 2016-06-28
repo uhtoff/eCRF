@@ -11,7 +11,7 @@ foreach ($result->rows as $row) {
     }
 }
 
-$sql = "SELECT COUNT(core.id) as numRecruited, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime' GROUP BY dateOnly";
+$sql = "SELECT COUNT(core.id) as numRecruited, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime' AND `time` >= '2016-02-02' GROUP BY dateOnly";
 $result = DB::query($sql);
 $startTarget = new DateTime('2016-02-02');
 $stepUp = new DateTime('2016-08-01');
@@ -31,7 +31,7 @@ echo <<<_END
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          [{type:'date', label:'Day'}, 'Recruited', 'Recruited after Feb 2016', 'Target' ],
+          [{type:'date', label:'Day'}, 'Recruited', 'Target' ],
 _END;
 $postFeb = 0;
 $recruitTarget = 0;
@@ -69,7 +69,7 @@ foreach( $result->rows as $row ) {
         $array .= "new Date({$date->format('Y')}, ";
         $array .= $date->format('m') - 1;
         $array .= ", {$date->format('d')})";
-        $array .= ",{$total},{$postFeb},{$recruitTarget}],";
+        $array .= ",{$total},{$recruitTarget}],";
         $date->modify('+1 day');
     }
     $total+=$row->numRecruited;
@@ -98,7 +98,7 @@ foreach( $result->rows as $row ) {
     $array .= "new Date({$date->format('Y')}, ";
     $array .= $date->format('m') - 1;
     $array .= ", {$date->format('d')})";
-    $array .= ",{$total},{$postFeb},{$recruitTarget}],";
+    $array .= ",{$total},{$recruitTarget}],";
     $date->modify('+1 day');
 }
 $lastMonth = $date->format('m') - 1;
