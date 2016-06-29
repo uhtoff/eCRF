@@ -137,7 +137,7 @@ echo <<<_END
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 _END;
 echo "<div><p>Total recruited: {$total}</p>";
-echo "<p>Total recruited post Feb 2016: {$postFeb}</p>";
+echo "<p>Target recruitment 4800 by December 2018</p>";
 if ( $user->getPrivilege() == 1 ) {
     echo "<p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p>";
 }
@@ -150,7 +150,7 @@ $last30 = array();
 foreach( $last30Result->rows as $row ) {
     $last30[$row->name] = $row->numRecruited;
 }
-echo "<table class='table table-striped table-bordered'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
+echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
 foreach ($result->rows as $row) {
     if ( isset($last30[$row->name])) {
         $last30Val = $last30[$row->name];
