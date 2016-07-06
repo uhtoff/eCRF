@@ -160,6 +160,64 @@ foreach ($result->rows as $row) {
     echo "<tr><td>$row->name</td><td>$row->numRecruited</td><td>{$last30Val}</td>";
 }
 echo "</tbody></table>";
+
+$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 1 AND cpap.cpap = 0";
+$result = DB::query($sql);
+$nodeviation = array();
+$deviation = array();
+foreach ($result->rows as $row) {
+    if (is_null($row->nocpap) || !$row->nocpap) {
+        $nodeviation[] = $row->trialid;
+    } else {
+        $deviation[] = $row->trialid;
+    }
+}
+echo "<p>All the following trial IDs were assigned to the study group, but did not receive CPAP</p>";
+if (!empty($nodeviation)) {
+    echo "<p>The following Trial IDs have no appropriate Protocol Deviation form entered</p>";
+    echo "<ul>";
+    foreach ($nodeviation as $id) {
+        echo "<li>{$id}</li>";
+    }
+    echo "</ul>";
+}
+if (!empty($deviation)) {
+    echo "<p>The following Trial IDs have an appropriate Protocol Deviation form entered</p>";
+    echo "<ul>";
+    foreach ($deviation as $id) {
+        echo "<li>{$id}</li>";
+    }
+    echo "</ul>";
+}
+
+$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 0 AND cpap.cpap = 1";
+$result = DB::query($sql);
+$nodeviation = array();
+$deviation = array();
+foreach ($result->rows as $row) {
+    if (is_null($row->nocpap)) {
+        $nodeviation[] = $row->trialid;
+    } else {
+        $deviation[] = $row->trialid;
+    }
+}
+echo "<p>All the following trial IDs were assigned to the control group, but did receive CPAP</p>";
+if (!empty($nodeviation)) {
+    echo "<p>The following Trial IDs have no appropriate Protocol Deviation form entered</p>";
+    echo "<ul>";
+    foreach ($nodeviation as $id) {
+        echo "<li>{$id}</li>";
+    }
+    echo "</ul>";
+}
+if (!empty($deviation)) {
+    echo "<p>The following Trial IDs have an appropriate Protocol Deviation form entered</p>";
+    echo "<ul>";
+    foreach ($deviation as $id) {
+        echo "<li>{$id}</li>";
+    }
+    echo "</ul>";
+}
 //$trial->simulateTrial();
 /*$sql = "SELECT COUNT(signed) as crfCount, SUM(signed) as numSigned FROM link";
 $crfs = DB::query($sql);
