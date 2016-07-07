@@ -1052,17 +1052,20 @@ _END;
 		if ( !$page ) {
 			$page = $this->getPage();
 		}
+        // Fire this off first to prevent any possible complication of passing through the record to the form field processes
+        $fields = $this->getFormFields( $page, false, NULL, $record );
+
+        if ( !$record ) {
+            $record = $this->record;
+        }
+
         if ( !$data ) {
-            if ( $record ) {
-                $data = $record->getData($page);
-            } else {
-                $data = $this->record->getData($page);
-            }
+            $data = $record->getData($page);
             if ( !$data ) {
                 return false;
             }
         }
-		$fields = $this->getFormFields( $page, false, NULL, $record );
+
 		foreach( $fields as $name => $values ) {
 			if ( isset( $values['mandatory'] ) ) {
 				$mand = $values['mandatory'];
@@ -1077,7 +1080,7 @@ _END;
                     $mandValue = 1;
                 }
 				if ( $mand == 1 || $data->get( $mandField ) == $mandValue ) { // If either mandatory is 1, or the fieldname in mandatory is truthy
-					if ( emptyInput( $data->get( $fieldName ) ) && !( method_exists($data, 'getFlag') && $data->getFlag( $page, $fieldName ) ) ) { // See if that field is filled and unflagged
+					if ( emptyInput( $data->get( $fieldName ) ) && !( method_exists($data, 'getFlag') && $data->getFlag( $page, $fieldName, $record->getID() ) ) ) { // See if that field is filled and unflagged
 						$checkComplete = false; // If not set return value as false and break (only takes one empty field to not be complete
 						break;
 					}
@@ -1097,7 +1100,7 @@ _END;
 		$result = DB::query( $sql );
         foreach( $result->rows as $row ) {
             $data = $this->record->getData( $row->name );
-            $showPage = $this->parseBranches( $row->id  );           
+            $showPage = $this->parseBranches( $row->id  );
             if ( $showPage && !$this->checkComplete( $row->name, $data ) ) {
                 $checkComplete[] = $row->label;
             }
@@ -1108,12 +1111,11 @@ _END;
         $checkComplete = array();
         $sql = "SELECT id, name, label FROM pages WHERE class IS NOT NULL AND type = 'data' AND dataName = 'Record' AND active = 1 AND ( name != 'oneyear' AND name != 'oneyearit' ) ORDER BY pageOrder";
         $result = DB::query( $sql );
+        if (!$record) {
+            $record = $this->getRecord();
+        }
         foreach( $result->rows as $row ) {
-            if ($record) {
-                $data = $record->getData($row->name);
-            } else {
-                $data = $this->record->getData($row->name);
-            }
+            $data = $record->getData($row->name);
             $showPage = $this->parseBranches( $row->id, $record->getID() );
             if ( $showPage && !$this->checkComplete( $row->name, $data, $record ) ) {
                 $checkComplete[] = $row->label;

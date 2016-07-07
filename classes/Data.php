@@ -25,12 +25,15 @@ class Data extends DBObject {
     public function setClassName($class) {
         $this->_className = $class;
     }
-    public function getFlag($page, $fieldName) {
+    public function getFlag($page, $fieldName, $link_id = NULL) {
         $getFlag = false;
         $sql = "SELECT flagType_id, flagText FROM flag 
             WHERE link_id = ? AND field = ?";
         $field = "{$page}-{$fieldName}";
-        $pA = array('is', $_SESSION['user']->isLinked(), $field);
+        if (!$link_id) {
+            $link_id = $_SESSION['user']->isLinked();
+        }
+        $pA = array('is', $link_id, $field);
         $result = DB::query($sql, $pA);
         if ( $result->getRows() ) {
             $getFlag = array('flagType' => $result->flagType_id, 
