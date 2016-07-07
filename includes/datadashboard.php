@@ -90,7 +90,7 @@ foreach ($records as $record) {
         if (count($trial->checkInterimComplete($record))==0) {
             $centreArr[$record->getCentreName()]['complete']++;
         } else {
-            $incompleteArr[] = $record->getField('core','trialid');
+            $incompleteArr[$record->getField('core','trialid')] = $trial->checkInterimComplete($record);
         }
     }
 }
@@ -104,6 +104,13 @@ foreach ($centreArr as $centre => $centreData ) {
 }
 echo "</tbody></table>";
 echo "<p>Incomplete CRFs include:</p>";
-foreach ($incompleteArr as $incomplete) {
-    echo "<p>{$incomplete}</p>";
+echo "<ul>";
+foreach ($incompleteArr as $incomplete => $pages) {
+    echo "<li>{$incomplete}</li>";
+    echo "<ul>";
+    foreach ($pages as $page) {
+        echo "<li>$page</li>";
+    }
+    echo "</ul>";
 }
+echo "</ul>";
