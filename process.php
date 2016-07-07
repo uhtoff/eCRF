@@ -836,7 +836,7 @@ switch( $include ) {
                     $field = NULL;
                     if ( in_array($row->fieldID,$skipFields) ) continue;
                     if( isset( $dataRow->{$row->dl_name} ) ) $field = $dataRow->{$row->dl_name};
-                    else $field = $dataRow->{$row->finalFieldName};
+                    elseif ( isset($dataRow->{$row->finalFieldName})) $field = $dataRow->{$row->finalFieldName};
                     if ( in_array($row->fieldID,$encryptedFields) && !is_null($field) ) {
                         $td = new Encrypt($_SESSION['user']->getKey());
                         $field = $td->decrypt($field);
