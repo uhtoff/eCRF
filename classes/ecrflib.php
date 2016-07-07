@@ -700,7 +700,7 @@ _END;
             return 'en';
         }
     }
-	public function getFormFields( $page = NULL, $multiple = false, $multiSuffix = NULL, $language = 'en' ) {
+	public function getFormFields( $page = NULL, $multiple = false, $multiSuffix = NULL, $record = NULL ) {
 		if ( !$page ) {
             $page = $this->getPage();
         }
@@ -725,7 +725,7 @@ _END;
 			$pA = array( 's', $page );			
         }
         $result = DB::query( $sql, $pA );
-        $excluded = $this->getExcludedFormFields();
+        $excluded = $this->getExcludedFormFields($record);
         $counter = 1;
         foreach( $result->rows as $row ) {
             if (in_array($row->id,$excluded)) {
@@ -887,7 +887,7 @@ _END;
         $this->fields = $getFormFields;
 		return $getFormFields;
 	}
-    protected function getExcludedFormFields()
+    protected function getExcludedFormFields($record=NULL)
     {
         $excluded = array();
         $sql = "SELECT * FROM formFields_branch";
@@ -1056,7 +1056,7 @@ _END;
                 return false;
             }
         }
-		$fields = $this->getFormFields( $page );
+		$fields = $this->getFormFields( $page, false, NULL, $data  );
 		foreach( $fields as $name => $values ) {
 			if ( isset( $values['mandatory'] ) ) {
 				$mand = $values['mandatory'];
