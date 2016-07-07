@@ -74,6 +74,7 @@ $today = new DateTime();
 $completeCutOff = $today->modify('40 days ago');
 $startTarget = new DateTime('2016-02-02');
 $centreArr = array();
+$incompleteArr = array();
 foreach ($records as $record) {
     $randDate = new DateTime($record->getRandomisationDate());
     if ($randDate < $startTarget) {
@@ -88,6 +89,8 @@ foreach ($records as $record) {
         }
         if (count($trial->checkInterimComplete($record))==0) {
             $centreArr[$record->getCentreName()]['complete']++;
+        } else {
+            $incompleteArr[] = $record->getField('core','trialid');
         }
     }
 }
@@ -100,3 +103,7 @@ foreach ($centreArr as $centre => $centreData ) {
     echo "<tr><td>$centre</td><td>{$centreData['recruited']}</td><td>{$centreData['complete']}</td><td>{$percentComplete}</td></tr>";
 }
 echo "</tbody></table>";
+echo "<p>Incomplete CRFs include:</p>";
+foreach ($incompleteArr as $incomplete) {
+    echo "<p>{$incomplete}</p>";
+}
