@@ -34,7 +34,7 @@ if (!empty($nodeviation) || !empty($deviation)) {
     echo "<p>No patients assigned to the study group did not receive CPAP</p>";
 }
 
-$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 0 AND cpap.cpap = 1";
+$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 0 AND cpap.cpap = 1 AND link.discontinue_id IS NULL";
 $result = DB::query($sql);
 $nodeviation = array();
 $deviation = array();
@@ -75,10 +75,11 @@ $completeCutOff = $today->modify('40 days ago');
 $startTarget = new DateTime('2016-02-02');
 $centreArr = array();
 foreach ($records as $record) {
-    if ($record->getRandomisationDate() < $startTarget) {
+    $randDate = new DateTime($record->getRandomisationDate());
+    if ($randDate < $startTarget) {
         continue;
     }
-    if ($record->getRandomisationDate() < $completeCutOff) {
+    if ($randDate < $completeCutOff) {
         if (!isset($centreArr[$record->getCentreName()])) {
             $centreArr[$record->getCentreName()]['recruited'] = 1;
             $centreArr[$record->getCentreName()]['complete'] = 0;
