@@ -1108,7 +1108,7 @@ _END;
             } else {
                 $data = $this->record->getData($row->name);
             }
-            $showPage = $this->parseBranches( $row->id  );
+            $showPage = $this->parseBranches( $row->id, $data->getID() );
             if ( $showPage && !$this->checkComplete( $row->name, $data ) ) {
                 $checkComplete[] = $row->label;
             }

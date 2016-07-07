@@ -92,6 +92,8 @@ foreach ($records as $record) {
     }
 }
 
+
+
 echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
 foreach ($centreArr as $centre => $centreData ) {
     $percentComplete = round($centreData['complete']*100/$centreData['recruited'],1);
