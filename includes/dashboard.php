@@ -142,24 +142,6 @@ if ( $user->getPrivilege() == 1 ) {
     echo "<p>Control count: {$numControl}</p><p>Intervention count: {$numIntervention}</p>";
 }
 echo "</div>";
-$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM core RIGHT JOIN centre ON core.centre_id = centre.id GROUP BY centre_id HAVING numRecruited > 0 ORDER BY centre.name";
-$result = DB::query($sql);
-$sql = "SELECT centre.name, COUNT(core.id) as numRecruited FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id LEFT JOIN centre ON core.centre_id = centre.id WHERE field = 'randdatetime' AND `time` >= CURDATE() - INTERVAL 30 DAY GROUP BY centre.name";
-$last30Result = DB::query($sql);
-$last30 = array();
-foreach( $last30Result->rows as $row ) {
-    $last30[$row->name] = $row->numRecruited;
-}
-echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
-foreach ($result->rows as $row) {
-    if ( isset($last30[$row->name])) {
-        $last30Val = $last30[$row->name];
-    } else {
-        $last30Val = 0;
-    }
-    echo "<tr><td>$row->name</td><td>$row->numRecruited</td><td>{$last30Val}</td>";
-}
-echo "</tbody></table>";
 
 $records = $trial->getAllRecords();
 $centreArr = array();
@@ -190,7 +172,7 @@ foreach ($centreArr as $centre => $centreData ) {
 }
 echo "</tbody></table>";
 
-$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 1 AND cpap.cpap = 0";
+$sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 1 AND cpap.cpap = 0 AND link.discontinue_id IS NOT NULL";
 $result = DB::query($sql);
 $nodeviation = array();
 $deviation = array();
