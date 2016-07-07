@@ -554,8 +554,8 @@ switch( $include ) {
             $sql = "SELECT formFields.id as fieldID, labelText, pages_name, pages.label as pageLabel, fieldName, 
                 formFields.type, pages.id as pageID FROM formFields 
                 LEFT JOIN pages ON pages.name = pages_name 
-                WHERE dataName = 'record'
-                AND ( formFields.type != 'heading' AND formFields.type != 'data' )
+                WHERE dataName = 'record'  AND pages_name != 'adverseevent'
+                AND ( formFields.type != 'break' AND formFields.type != 'heading' AND formFields.type != 'data' )
                 ORDER BY pageOrder, pages_name, entryorder";
             $result = DB::query( $sql );
 
@@ -780,11 +780,11 @@ switch( $include ) {
                     $skipFields = array();
                     $encryptedFields = array();
 
-                    $sql = "SELECT formFields.id as fieldID, labelText, pages_name, pages.label as pageLabel, fieldName, 
-                        formFields.type, pages.id as pageID, dl_name FROM formFields 
+                    $sql = "SELECT formFields.id as fieldID, labelText, pages_name, pages.label as pageLabel, CONCAT(pages_name,'_',fieldName) as finalFieldName, 
+                        fieldName, formFields.type, pages.id as pageID, dl_name FROM formFields 
                         LEFT JOIN pages ON pages.name = pages_name 
-                        WHERE dataName = 'record'
-                        AND ( formFields.type != 'heading' AND formFields.type != 'data' )
+                        WHERE dataName = 'record' AND pages_name != 'adverseevent'
+                        AND ( formFields.type != 'break' AND formFields.type != 'heading' AND formFields.type != 'data' )
                         ORDER BY pageOrder, pages_name, entryorder";
                     $result = DB::query( $sql );
 
@@ -836,6 +836,7 @@ switch( $include ) {
                     $field = NULL;
                     if ( in_array($row->fieldID,$skipFields) ) continue;
                     if( isset( $dataRow->{$row->dl_name} ) ) $field = $dataRow->{$row->dl_name};
+                    else $field = $dataRow->{$row->finalFieldName};
                     if ( in_array($row->fieldID,$encryptedFields) && !is_null($field) ) {
                         $td = new Encrypt($_SESSION['user']->getKey());
                         $field = $td->decrypt($field);

@@ -49,7 +49,7 @@ echo "<label for=\"encrypted\">Download patient identifiable data? ";
 echo "<input type=\"radio\" name=\"encrypted\" value=\"0\" checked=\"checked\"> No ";
 echo "<input type=\"radio\" name=\"encrypted\" value=\"1\" > Yes ";
 echo "</label>";
-echo "<p><a href=\"/docs/Key.xlsx\">Download data dictionary</a></p>";
+//echo "<p><a href=\"/docs/Key.xlsx\">Download data dictionary</a></p>";
 echo "<div class=\"confirmText\">";
 echo "<p>In order to download patient identifiable data you must re-enter your password below.";
 echo "This confirms your identity and your agreement that the data will not be stored or transmitted in an unencrypted form.</p>";
