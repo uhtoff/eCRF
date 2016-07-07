@@ -145,11 +145,11 @@ echo "</div>";
 
 $records = $trial->getAllRecords();
 $centreArr = array();
+$recentRecruitDate = new DateTime();
+$recentRecruitDate->modify('30 days ago');
 foreach ($records as $record) {
     $recentRecruit = false;
     $randDate = new DateTime($record->getRandomisationDate());
-    $recentRecruitDate = new DateTime();
-    $recentRecruitDate->modify('30 days ago');
     if ($randDate < $startTarget) {
         continue;
     } elseif ($randDate >= $recentRecruitDate) {

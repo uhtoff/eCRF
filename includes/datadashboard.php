@@ -68,3 +68,32 @@ if (!empty($nodeviation) || !empty($deviation)) {
 } else {
     echo "<p>No patients assigned to the control group have received CPAP</p>";
 }
+
+$records = $trial->getAllRecords();
+$today = new DateTime();
+$completeCutOff = $today->modify('40 days ago');
+$startTarget = new DateTime('2016-02-02');
+$centreArr = array();
+foreach ($records as $record) {
+    if ($record->getRandomisationDate() < $startTarget) {
+        continue;
+    }
+    if ($record->getRandomisationDate() < $completeCutOff) {
+        if (!isset($centreArr[$record->getCentreName()])) {
+            $centreArr[$record->getCentreName()]['recruited'] = 1;
+            $centreArr[$record->getCentreName()]['complete'] = 0;
+        } else {
+            $centreArr[$record->getCentreName()]['recruited']++;
+        }
+        if (count($trial->checkInterimComplete($record))==0) {
+            $centreArr[$record->getCentreName()]['complete']++;
+        }
+    }
+}
+
+echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
+foreach ($centreArr as $centre => $centreData ) {
+    $percentComplete = round($centreData['complete']*100/$centreData['recruited'],1);
+    echo "<tr><td>$centre</td><td>{$centreData['recruited']}</td><td>{$centreData['complete']}</td><td>{$percentComplete}</td></tr>";
+}
+echo "</tbody></table>";

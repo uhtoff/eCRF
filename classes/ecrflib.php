@@ -1098,7 +1098,23 @@ _END;
         }
 		return $checkComplete;
 	}
-
+    public function checkInterimComplete($record=NULL) {
+        $checkComplete = array();
+        $sql = "SELECT id, name, label FROM pages WHERE class IS NOT NULL AND type = 'data' AND dataName = 'Record' AND active = 1 AND ( label != 'oneyear' OR label != 'oneyearit' ) ORDER BY pageOrder";
+        $result = DB::query( $sql );
+        foreach( $result->rows as $row ) {
+            if ($record) {
+                $data = $record->getData($row->name);
+            } else {
+                $data = $this->record->getData($row->name);
+            }
+            $showPage = $this->parseBranches( $row->id  );
+            if ( $showPage && !$this->checkComplete( $row->name, $data ) ) {
+                $checkComplete[] = $row->label;
+            }
+        }
+        return $checkComplete;
+    }
 	public function sendEmail( $emails ) {
         $emails = (array)$emails;
         $success = false;
