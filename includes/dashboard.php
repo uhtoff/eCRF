@@ -161,6 +161,35 @@ foreach ($result->rows as $row) {
 }
 echo "</tbody></table>";
 
+$records = $trial->getAllRecords();
+$centreArr = array();
+foreach ($records as $record) {
+    $recentRecruit = false;
+    $randDate = new DateTime($record->getRandomisationDate());
+    $recentRecruitDate = new DateTime();
+    $recentRecruitDate->modify('30 days ago');
+    if ($randDate < $startTarget) {
+        continue;
+    } elseif ($randDate >= $recentRecruitDate) {
+        $recentRecruit = true;
+    }
+    if (!isset($centreArr[$record->getCentreName()])) {
+        $centreArr[$record->getCentreName()]['recruited'] = 1;
+        $centreArr[$record->getCentreName()]['recent'] = 0;
+    } else {
+        $centreArr[$record->getCentreName()]['recruited']++;
+    }
+    if ($recentRecruit) {
+        $centreArr[$record->getCentreName()]['recent']++;
+    }
+}
+
+echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited</th><th>Last 30 days</th></thead><tbody>";
+foreach ($centreArr as $centre => $centreData ) {
+    echo "<tr><td>$centre</td><td>{$centreData['recruited']}</td><td>{$centreData['recent']}</td>";
+}
+echo "</tbody></table>";
+
 $sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 1 AND cpap.cpap = 0";
 $result = DB::query($sql);
 $nodeviation = array();

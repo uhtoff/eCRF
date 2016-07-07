@@ -268,6 +268,25 @@ class Trial { // Object for all things just related to the trial/site (writing h
     public function getRecord() {
         return $this->record;
     }
+
+    /**
+     * Get array of all records from the database
+     * @param bool $includeDiscontinued
+     * @return Record[]
+     */
+    public function getAllRecords($includeDiscontinued=false)
+    {
+        $sql = "SELECT id FROM link";
+        if (!$includeDiscontinued) {
+            $sql .= " WHERE discontinue_id IS NULL";
+        }
+        $linkIDs = DB::query($sql);
+        $records = array();
+        foreach ($linkIDs->rows as $linkID) {
+            $records[$linkID->id] = new Record($linkID->id);
+        }
+        return $records;
+    }
     /*
      * return eCRFUser
      */

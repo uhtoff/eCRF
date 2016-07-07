@@ -276,6 +276,12 @@ class Record extends DBObject {
     public function getCentre() {
 		return $this->getField('core','centre_id');
 	}
+    public function getCentreName() {
+        return $this->getField('core','centre_name');
+    }
+    public function getRandomisationDate() {
+        return $this->getField('core','randdate');
+    }
 	public function saveToDB( $prop = NULL ) {
         if ( isset( $this->objects ) ) {
             foreach( $this->objects as $page => $object ) {
