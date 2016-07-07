@@ -911,7 +911,9 @@ _END;
                     }
                     break;
                 default:
-                    if ($this->getRecord()) {
+                    if ( $record ) {
+                        $property = $record->getField($row->object, $row->property);
+                    } elseif ($this->getRecord()) {
                         $property = $this->getRecord()->getField($row->object, $row->property);
                     }
                     break;
@@ -1045,7 +1047,7 @@ _END;
 			}
 		}
 	}
-	public function checkComplete( $page = NULL, $data = NULL ) {
+	public function checkComplete( $page = NULL, $data = NULL, $record = NULL ) {
 		$checkComplete = true;
 		if ( !$page ) {
 			$page = $this->getPage();
@@ -1056,7 +1058,7 @@ _END;
                 return false;
             }
         }
-		$fields = $this->getFormFields( $page, false, NULL, $data  );
+		$fields = $this->getFormFields( $page, false, NULL, $record );
 		foreach( $fields as $name => $values ) {
 			if ( isset( $values['mandatory'] ) ) {
 				$mand = $values['mandatory'];
@@ -1108,8 +1110,8 @@ _END;
             } else {
                 $data = $this->record->getData($row->name);
             }
-            $showPage = $this->parseBranches( $row->id, $data->getID() );
-            if ( $showPage && !$this->checkComplete( $row->name, $data ) ) {
+            $showPage = $this->parseBranches( $row->id, $record->getID() );
+            if ( $showPage && !$this->checkComplete( $row->name, $data, $record ) ) {
                 $checkComplete[] = $row->label;
             }
         }

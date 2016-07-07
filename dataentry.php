@@ -206,7 +206,7 @@ if ( $page == 'signpt' ) {
 } else {
     $page = $trial->getPage();
 	$data = $trial->record; // Get data object from trial record
-    $fields = $trial->getFormFields( $page, NULL, NULL, $user->getLanguage() ); // Get fields from DB
+    $fields = $trial->getFormFields( $page ); // Get fields from DB
     $form->addID( 'dataEntry' );
     $form->processFields( $fields, $data, $trial->getUser()->getCentreUnits(), $user->getLanguage() ); // Create form from fields and data object
 	if ( isset( $_SESSION['inputErr'] ) ) { // If any errors then add them to the form
