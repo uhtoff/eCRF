@@ -1053,7 +1053,11 @@ _END;
 			$page = $this->getPage();
 		}
         if ( !$data ) {
-            $data = $this->record->getData( $page );
+            if ( $record ) {
+                $data = $record->getData($page);
+            } else {
+                $data = $this->record->getData($page);
+            }
             if ( !$data ) {
                 return false;
             }
