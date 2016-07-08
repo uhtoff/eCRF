@@ -14,6 +14,8 @@ foreach ($records as $record) {
     }
 }
 
+$caption = "Incomplete CRFs";
+
 if( !empty($incompleteArr) ) {
     echo "<div class=\"container well\" style=\"background-color:#FFFFFF;\">";
     echo "<h3>$caption</h3>";
