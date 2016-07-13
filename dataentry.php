@@ -20,6 +20,9 @@ else {
 }
 
 if ( isset( $_SESSION['user'] ) ) {
+    /**
+     * @var $user eCRFUser
+     */
 	$user = $_SESSION['user'];
 	$trial = new eCRF( $page );
 	$loggedIn = $trial->addUser( $user );
@@ -165,6 +168,12 @@ if ( $page == 'signpt' ) {
 				if ( is_null($field) ) {
 					continue;
 				}
+                if( $field->encrypted ) {
+                    if ( !$user->isCentralAdmin() ) continue;
+                    $td = new Encrypt($user->getKey());
+                    $row->old_value = $td->decrypt($row->old_value);
+                    $row->new_value = $td->decrypt($row->new_value);
+                }
                 $dt = splitDateTime($row->time);
                 $time = $dt['time'];
                 $sql = "SELECT value FROM formVal WHERE formFields_id = ? AND operator = 'IN LIST' ORDER BY groupNum";
@@ -175,11 +184,7 @@ if ( $page == 'signpt' ) {
                 } else {
                     $rule = NULL;
                 }
-                if( $field->encrypted ) {
-                    $td = new Encrypt($user->getKey());
-                    $row->old_value = $td->decrypt($row->old_value);
-                    $row->new_value = $td->decrypt($row->new_value);
-                }
+
                 if ( $row->old_value ) {                  
                     $ov = $trial->record->displayFieldValue($row->old_value, $field->type, $rule );
                     if ( $field->type == 'checkbox' ) {
@@ -214,7 +219,7 @@ if ( $page == 'signpt' ) {
 		unset( $_SESSION['inputErr'] );
 	}
     
-    if ( $page === 'core' ) {
+    if ( $page === 'core' && !$user->isRoot() ) {
         $form->makeReadOnly();
     } 
 	if ( ( $trial->record->isSigned() || $trial->record->isPreSigned() ) ) {
