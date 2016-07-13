@@ -1,4 +1,5 @@
 <?php
+echo "<div class='container well'>";
 $sql = "SELECT violation.nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core LEFT JOIN link ON core.id = link.core_id LEFT JOIN cpap ON link.cpap_id = cpap.id LEFT JOIN violationlink ON link.id = violationlink.link_id LEFT JOIN violation ON violationlink.violation_id = violation.id WHERE studygroup = 1 AND cpap.cpap = 0 AND link.discontinue_id IS NULL";
 $result = DB::query($sql);
 $nodeviation = array();
@@ -90,12 +91,11 @@ foreach ($records as $record) {
         if (count($trial->checkInterimComplete($record))==0) {
             $centreArr[$record->getCentreName()]['complete']++;
         } else {
-            $incompleteArr[$record->getField('core','trialid')] = $trial->checkInterimComplete($record);
+            $incompleteArr[$record->getField('core','trialid')]['centrename'] = $record->getCentreName();
+            $incompleteArr[$record->getField('core','trialid')]['pages'] = $trial->checkInterimComplete($record);
         }
     }
 }
-
-
 
 echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
 foreach ($centreArr as $centre => $centreData ) {
@@ -104,13 +104,17 @@ foreach ($centreArr as $centre => $centreData ) {
 }
 echo "</tbody></table>";
 echo "<p>Incomplete CRFs include:</p>";
-echo "<ul>";
-foreach ($incompleteArr as $incomplete => $pages) {
-    echo "<li>{$incomplete}</li>";
+echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Trial ID</th><th>Imcomplete pages</th></thead><tbody>";
+foreach ($incompleteArr as $incomplete => $record) {
+    echo "<tr><td>{$incomplete}</td>";
+    echo "<td>{$record['centrename']}</td>";
+    echo "<td>";
     echo "<ul>";
-    foreach ($pages as $page) {
+    foreach ($record['pages'] as $page) {
         echo "<li>$page</li>";
     }
     echo "</ul>";
+    echo "</td></tr>";
 }
-echo "</ul>";
+echo "</tbody></table>";
+echo "</div>";
