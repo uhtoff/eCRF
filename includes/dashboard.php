@@ -215,27 +215,11 @@ if ( $user->getPrivilege() == 1 ) {
         }
     }
     echo "<tr><td>Epidural</td>";
-    if (isset($assignment['epidural']['study'])) {
-        echo "<td>{$assignment['epidural']['study']}</td>";
-    } else {
-        echo "<td>0</td>";
-    }
-    if (isset($assignment['epidural']['control'])) {
-        echo "<td>{$assignment['epidural']['control']}</td>";
-    } else {
-        echo "<td>0</td>";
-    }
+    echo "<td>{$minimisation['epidural']['study']}</td>";
+    echo "<td>{$minimisation['epidural']['control']}</td>";
     echo "<tr><td>No epidural</td>";
-    if (isset($assignment['noepidural']['study'])) {
-        echo "<td>{$assignment['noepidural']['study']}</td>";
-    } else {
-        echo "<td>0</td>";
-    }
-    if (isset($assignment['noepidural']['control'])) {
-        echo "<td>{$assignment['noepidural']['control']}</td>";
-    } else {
-        echo "<td>0</td>";
-    }
+    echo "<td>{$minimisation['noepidural']['study']}</td>";
+    echo "<td>{$minimisation['noepidural']['control']}</td>";
     echo "</tbody></table>";
 }
 echo "</div>";
