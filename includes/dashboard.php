@@ -5,7 +5,7 @@ $sql = "SELECT core.id, core.studygroup, DATE(time) as dateOnly, planned_epidura
         LEFT JOIN centre ON core.centre_id = centre.id 
         LEFT JOIN country ON centre.country_id = country.id
         LEFT JOIN surgicalprocedure ON core.planned_surgery = surgicalprocedure.option_value
-        WHERE field = 'randdatetime' AND `time` >= '2016-02-02' AND link.discontinue_id IS NULL";
+        WHERE field = 'randdatetime' AND link.discontinue_id IS NULL";
 $result = DB::query($sql);
 $array = '';
 $numControl = $numIntervention = $total = 0;

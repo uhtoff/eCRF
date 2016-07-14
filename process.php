@@ -687,7 +687,7 @@ switch( $include ) {
         $sql = "SELECT link.id FROM link
   LEFT JOIN core ON link.core_id = core.id
   LEFT JOIN centre ON core.centre_id = centre.id
-  WHERE centre.country_id = 30
+  WHERE centre.country_id = 30 AND discontinue_id IS NULL
   ORDER BY link.id";
         $query = DB::query($sql);
         $count = 1;
