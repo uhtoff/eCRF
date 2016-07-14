@@ -271,7 +271,7 @@ foreach( $result->rows as $row ) {
 	$textarea = HTML::clean( $row->textarea );
 	$id = HTML::clean( $row->id );
 	$name = HTML::clean( $row->name );
-	echo "<label class=\"radio\"><input type=\"radio\" name=\"flag-flagType_id\" textarea=\"{$textarea}\" value=\"{$id}\" />{$name}</label>";
+	echo "<label class=\"radio\"><input type=\"radio\" name=\"flag-flagType_id\" data-textarea=\"{$textarea}\" value=\"{$id}\" />{$name}</label>";
 }
 	echo <<<_END
   </div>
@@ -328,4 +328,3 @@ echo "<div id=\"push\"></div>";
 echo '</div>';
 
 $trial->writeFooter();
-?>

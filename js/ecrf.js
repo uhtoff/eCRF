@@ -63,7 +63,7 @@ jQuery( function() {
     $( "input:radio[name=flag-flagType_id]" ).change( function() { // Attach to the change event for the flagType radio buttons
 		$( 'textarea[name=flag-flagText]' ).remove(); // Remove any previously formed text boxes
 		var selRadio = $( "input:radio[name=flag-flagType_id]:checked" ); // Define the selected radio button
-        if ( selRadio.attr( 'textarea' ) == 1 ) { // If it has the textarea attribute
+        if ( selRadio.attr( 'data-textarea' ) == 1 ) { // If it has the textarea attribute
 			var textArea = $( "<textarea/>",
 				{ name: 'flag-flagText' } );
 			selRadio.parent().after( textArea ); // Create and insert a text box
