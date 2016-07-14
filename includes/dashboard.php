@@ -1,5 +1,8 @@
 <?php
-$sql = "SELECT core.id, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime'";
+$sql = "SELECT core.id, core.studygroup, DATE(time) as dateOnly FROM coreAudit 
+        LEFT JOIN core on coreAudit.table_id = core.id 
+        LEFT JOIN link ON link.core_id = core.id 
+        WHERE field = 'randdatetime' AND link.discontinue_id IS NULL";
 $result = DB::query($sql);
 $array = '';
 $numControl = $numIntervention = $total = 0;
@@ -11,7 +14,10 @@ foreach ($result->rows as $row) {
     }
 }
 
-$sql = "SELECT COUNT(core.id) as numRecruited, core.studygroup, DATE(time) as dateOnly FROM coreAudit LEFT JOIN core on coreAudit.table_id = core.id WHERE field = 'randdatetime' AND `time` >= '2016-02-02' GROUP BY dateOnly";
+$sql = "SELECT COUNT(core.id) as numRecruited, core.studygroup, DATE(time) as dateOnly FROM coreAudit 
+        LEFT JOIN core on coreAudit.table_id = core.id 
+        LEFT JOIN link ON link.core_id = core.id 
+        WHERE field = 'randdatetime' AND `time` >= '2016-02-02' AND link.discontinue_id IS NULL GROUP BY dateOnly";
 $result = DB::query($sql);
 $startTarget = new DateTime('2016-02-02');
 $stepUp = new DateTime('2016-08-01');

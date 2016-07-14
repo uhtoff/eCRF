@@ -67,7 +67,7 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
 					INNER JOIN core ON link.core_id = core.id 
 					INNER JOIN centre ON core.centre_id = centre.id
 					LEFT JOIN coreAudit ON coreAudit.table_id = core.id
-                WHERE centre.id = ? AND core.studygroup IS NOT NULL
+                WHERE centre.id = ? AND core.studygroup IS NOT NULL AND link.discontinue_id IS NULL
                 GROUP BY link.id";
             $pA = array('i', $user->getCentre() );
             $result = DB::query($sql, $pA);
@@ -180,7 +180,7 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
 					INNER JOIN centre ON core.centre_id = centre.id
                     INNER JOIN country ON centre.country_id = country.id
                     LEFT JOIN coreAudit ON coreAudit.table_id = core.id
-				WHERE country.id = ?  AND core.studygroup IS NOT NULL
+				WHERE country.id = ?  AND core.studygroup IS NOT NULL AND link.discontinue_id IS NULL
 				GROUP BY link.id";
 			$centre = new Centre($user->getCentre());
             $pA = array('i',$centre->get('country_id'));
@@ -209,12 +209,12 @@ function write_search_table( $type, $acc = false, $active = false, $centre = NUL
                     INNER JOIN country ON centre.country_id = country.id
                     LEFT JOIN coreAudit ON coreAudit.table_id = core.id ";
              if ( $centre ) {
-                $sql .= "WHERE centre.id = ? ";
+                $sql .= "WHERE centre.id = ? AND link.discontinue_id IS NULL ";
                  $sql .= "GROUP BY link.id";
             $pA = array('i',$centre);
             $result = DB::query($sql, $pA);
             } else {
-                 $sql .= "GROUP BY link.id";
+                 $sql .= "WHERE link.discontinue_id IS NULL GROUP BY link.id";
                 $result = DB::query($sql);
                 }
             break;

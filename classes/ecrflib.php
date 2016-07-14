@@ -1323,11 +1323,12 @@ class eCRF extends Trial {
         $numControl = $numStudy = 0;
         $criteria = array('centre.country_id','planned_surgery','planned_epidural');
         foreach ( $criteria as $criterion ) {
-            $sql = "SELECT studygroup, count(core.id) AS caseCount FROM core ";
+            $sql = "SELECT studygroup, count(core.id) AS caseCount FROM core 
+                    LEFT JOIN link ON link.core_id = core.id ";
             if ( strpos($criterion,'.')) {
                 $sql .= "LEFT JOIN centre ON core.centre_id = centre.id ";
             }
-            $sql .= "WHERE studygroup IS NOT NULL
+            $sql .= "WHERE link.discontinue_id IS NULL AND studygroup IS NOT NULL
 			AND {$criterion} = ?
 			AND trialid != ?
 			GROUP BY studygroup";

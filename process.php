@@ -378,11 +378,15 @@ switch( $include ) {
             $result = DB::query( $sql, $pA );
 			if ( $result->getRows() ) {
 				if( is_numeric( $result->id ) ) {
-					$sql = "SELECT id FROM link WHERE core_id = ?";
+					$sql = "SELECT id, discontinue_id FROM link WHERE core_id = ?";
 					$pA = array( 'i', $result->rows[0]->id );
                     $result = DB::query( $sql, $pA );
-					if( $result->getRows() ) {					
-						$link_id = $result->rows[0]->id;
+					if( $result->getRows() ) {
+					    if ( is_null($result->discontinue_id) ) {
+                            $link_id = $result->rows[0]->id;
+                        } else {
+                            $_SESSION['error'] = "This patient record has been discontinued.";
+                        }
 					} else $_SESSION['error'] = "An error has occurred, please try again.";
 				} else $_SESSION['error'] = "An error has occurred, please try again.";
 			} else $_SESSION['error'] = "Your search returned no patients, please try again.";
@@ -747,12 +751,12 @@ switch( $include ) {
             
                 $sql = "SELECT * FROM all_data";
                 if ( $include == 'dlsite' ) {
-                    $sql .= " WHERE centre_id = ?";
+                    $sql .= " WHERE centre_id = ? AND discontinue_id IS NULL";
                     $pA = array('i',$user->getCentre());
                     $dataQuery = DB::query($sql, $pA);
                     $data = $user->getCentre('name');
                 } else if ( $include == 'countdb' ) {
-                    $sql .= " WHERE country_id = ?";
+                    $sql .= " WHERE country_id = ? AND discontinue_id IS NULL";
                     $startRec = $i*1000;
                     $sql .= " LIMIT {$startRec},1000";
                     $pA = array('i',$country);
@@ -760,7 +764,7 @@ switch( $include ) {
                     $data = 'country';
                 } else {
                     $startRec = $i*1000;
-                    $sql .= " LIMIT {$startRec},1000";
+                    $sql .= " WHERE discontinue_id IS NULL LIMIT {$startRec},1000";
                     $dataQuery = DB::query($sql);
                     $data = 'all';
                 }
