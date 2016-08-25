@@ -1,10 +1,14 @@
 <?php
-$sql = "SELECT v.id as vid, d.option_text as centre_name, link_id, c.trialid, v.active FROM violation v 
+$sql = "SELECT v.id as vid, d.option_text as centre_name, a.link_id, c.trialid, v.active, CONCAT(user.forename,' ',user.surname) as full_name, privilege.option_text as privilege_name FROM violation v 
 LEFT JOIN violationlink a ON v.id = a.violation_id 
 LEFT JOIN link b ON a.link_id = b.id 
 LEFT JOIN core c ON b.core_id = c.id
 LEFT JOIN centre d ON c.centre_id = d.id
-WHERE v.active = 1";
+LEFT JOIN violationAudit ON v.id = violationAudit.table_id
+LEFT JOIN user on violationAudit.user_id = user.id
+LEFT JOIN privilege ON user.privilege_id = privilege.option_value
+WHERE v.active = 1
+AND violationAudit.field='violationdesc'";
 if ( $user->isCentralAdmin() ) {
 	$sql .= " GROUP BY a.link_id ORDER BY active";
 	$result = DB::query($sql);
@@ -30,7 +34,7 @@ if ( $result->getRows() ) {
 	}
 	echo '<table class="table table-striped table-bordered table-hover dataTable"><thead>';
 	echo '<tr><th scope="col">Centre</th><th scope="col">' . Config::get('idName') . '</th><th scope="col">Deviation</th>';
-    echo '<th scope="col">Description</th><th scope="col">Reported time</th>';
+    echo '<th scope="col">Description</th><th scope="col">Reported time</th><th scope="col">Reported by</th>';
 	if ( $user->isCentralAdmin() ) {
 		echo '<th>Select</th>';
 	}
@@ -72,6 +76,7 @@ if ( $result->getRows() ) {
 				$pA = array('i',$rowv->vid);
 				$result = DB::query($sql,$pA);
 				echo "<td>{$result->time}</td>";
+                echo "<td>{$rowv->full_name} ({$rowv->privilege_name})</td>";
 				if ($user->isCentralAdmin()) {
 					echo "<td class='clickable'><input type='radio' name='vSelect' value='{$v->getID()}'/>";
 				}

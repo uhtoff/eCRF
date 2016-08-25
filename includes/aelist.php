@@ -1,10 +1,14 @@
 <?php
-$sql = "SELECT d.option_text as centre_name, link_id, adverseevent_id, trialid FROM aelink a
+$sql = "SELECT d.option_text as centre_name, a.link_id, adverseevent_id, trialid, CONCAT(user.forename,' ',user.surname) as full_name, privilege.option_text as privilege_name FROM aelink a
 LEFT JOIN link b ON a.link_id = b.id 
 LEFT JOIN core c ON b.core_id = c.id
 LEFT JOIN centre d ON c.centre_id = d.id
 LEFT JOIN adverseevent ON a.adverseevent_id = adverseevent.id
-WHERE adverseevent.active = 1";
+LEFT JOIN adverseeventAudit ON adverseevent.id = adverseeventAudit.table_id
+LEFT JOIN user on adverseeventAudit.user_id = user.id
+LEFT JOIN privilege ON user.privilege_id = privilege.option_value
+WHERE adverseevent.active = 1
+AND adverseeventAudit.field = 'ae'";
 if ( $user->isCentralAdmin() ) {
 	$sql .= " ORDER BY adverseevent.active DESC";
 	$result = DB::query($sql);
@@ -28,7 +32,7 @@ if ( $result->getRows() ) {
 	}
 	echo '<table class="table table-striped table-bordered table-hover dataTable"><thead>';
 	echo '<tr><th scope="col">Centre</th><th scope="col">' . Config::get('idName') . '</th><th scope="col">Type of adverse event</th>';
-    echo '<th scope="col">CPAP outcome</th><th scope="col">Serious adverse event criteria</th><th scope="col">Description</th><th scope="col">Reported time</th>';
+    echo '<th scope="col">CPAP outcome</th><th scope="col">Serious adverse event criteria</th><th scope="col">Description</th><th scope="col">Reported time</th><th scope="col">Reported by</th>';
 	if ( $user->isCentralAdmin() ) {
 		echo '<th>Select</th>';
 	}
@@ -99,6 +103,7 @@ if ( $result->getRows() ) {
 		}
 		echo "</td><td>{$row->description}</td>";
 		echo "<td>{$row->aedate} {$row->aetime}</td>";
+        echo "<td>{$rowae->full_name} ({$rowae->privilege_name})</td>";
 		if ($user->isCentralAdmin()) {
 			echo "<td class='clickable'><input type='radio' name='aeSelect' value='{$row->id}'/>";
 		}
