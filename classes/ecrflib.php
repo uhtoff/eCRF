@@ -910,6 +910,10 @@ _END;
                         }
                     }
                     break;
+                case 'User':
+                    $user = $this->getUser();
+                    $property = $user->{$row->property};
+                    break;
                 default:
                     if ( $record ) {
                         $property = $record->getField($row->object, $row->property);
