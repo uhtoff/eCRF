@@ -706,15 +706,21 @@ _END;
         }
         $fields = array();
         if ( $multiple ) {
-            $sql = "SELECT id, labelText, fieldName, defaultVal,
-					type, toggle, mandatory, multiple, size, class 		 
-				FROM formFields  
-				WHERE pages_name=?  
-                AND multiple = ?
-				ORDER BY entryorder";
-            $pA = array( 'ss', $page, $multiple );
-        } else {			
-			$sql = "SELECT formFields.id, IFNULL( label_text, formFields.labelText ) as label_text, fieldName, defaultVal,
+            if (!isset($this->multipleFormFields)) {
+                $sql = "SELECT id, labelText, fieldName, defaultVal,
+				  	type, toggle, mandatory, multiple, size, class 		 
+				  FROM formFields  
+				  WHERE pages_name=?  
+                  AND multiple = ?
+				  ORDER BY entryorder";
+                $pA = array('ss', $page, $multiple);
+                $result = $this->multipleFormFields = DB::query($sql, $pA);
+            } else {
+                $result = $this->multipleFormFields;
+            }
+        } else {
+            if (!isset($this->formFields)) {
+                $sql = "SELECT formFields.id, IFNULL( label_text, formFields.labelText ) as label_text, fieldName, defaultVal,
 					type, toggle, mandatory, size, class, readonly		 
 				FROM formFields
 				LEFT JOIN formFields_labels
@@ -722,9 +728,12 @@ _END;
 				WHERE pages_name=? 
                 AND multiple IS NULL			
 				ORDER BY entryorder";
-			$pA = array( 's', $page );			
+                $pA = array('s', $page);
+                $result = $this->formFields = DB::query($sql, $pA);
+            } else {
+                $result = $this->formFields;
+            }
         }
-        $result = DB::query( $sql, $pA );
         $excluded = $this->getExcludedFormFields($record);
         $counter = 1;
         foreach( $result->rows as $row ) {
@@ -1113,12 +1122,14 @@ _END;
 	}
     public function checkInterimComplete($record=NULL) {
         $checkComplete = array();
-        $sql = "SELECT id, name, label FROM pages WHERE class IS NOT NULL AND type = 'data' AND dataName = 'Record' AND active = 1 AND ( name != 'oneyear' AND name != 'oneyearit' ) ORDER BY pageOrder";
-        $result = DB::query( $sql );
+        if (!isset($this->interimPageList)) {
+            $sql = "SELECT id, name, label FROM pages WHERE class IS NOT NULL AND type = 'data' AND dataName = 'Record' AND active = 1 AND ( name != 'oneyear' AND name != 'oneyearit' ) ORDER BY pageOrder";
+            $this->interimPageList = DB::query($sql);
+        }
         if (!$record) {
             $record = $this->getRecord();
         }
-        foreach( $result->rows as $row ) {
+        foreach( $this->interimPageList->rows as $row ) {
             $data = $record->getData($row->name);
             $showPage = $this->parseBranches( $row->id, $record->getID() );
             if ( $showPage && !$this->checkComplete( $row->name, $data, $record ) ) {
