@@ -1,4 +1,5 @@
 <?php
+Timer::start();
 echo "<div class='container well'>";
 $sql = "SELECT SUM(violation.nocpap) AS nocpap, violation.violationdesc, core.trialid, studygroup, cpap.cpap FROM core 
 LEFT JOIN link ON core.id = link.core_id 
@@ -155,13 +156,19 @@ echo count(array_filter($durations, function($element) {
 }));
 echo "</td></tr></tbody>";
 echo "<table>";
+if ($user->getPrivilege() == 1) {
+    echo Timer::show();
+}
 $records = $trial->getAllRecords();
+if ($user->getPrivilege() == 1) {
+    echo Timer::show();
+}
 $today = new DateTime();
 $completeCutOff = $today->modify('40 days ago');
 $startTarget = new DateTime('2016-02-02');
 $centreArr = array();
 $incompleteArr = array();
-Timer::start();
+
 foreach ($records as $record) {
     $randDate = new DateTime($record->getRandomisationDate());
     if ($randDate < $startTarget) {
@@ -184,8 +191,7 @@ foreach ($records as $record) {
     }
 }
 if ($user->getPrivilege() == 1) {
-    $time = Timer::show();
-    echo "<p>{$time}</p>";
+    echo Timer::show();
 }
 echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
 foreach ($centreArr as $centre => $centreData ) {
