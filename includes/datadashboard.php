@@ -213,4 +213,7 @@ foreach ($incompleteArr as $incomplete => $record) {
     echo "</td></tr>";
 }
 echo "</tbody></table>";
+if ($user->getPrivilege() == 1) {
+    echo Timer::show();
+}
 echo "</div>";
