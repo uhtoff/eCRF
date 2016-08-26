@@ -161,6 +161,7 @@ $completeCutOff = $today->modify('40 days ago');
 $startTarget = new DateTime('2016-02-02');
 $centreArr = array();
 $incompleteArr = array();
+Timer::start();
 foreach ($records as $record) {
     $randDate = new DateTime($record->getRandomisationDate());
     if ($randDate < $startTarget) {
@@ -173,13 +174,18 @@ foreach ($records as $record) {
         } else {
             $centreArr[$record->getCentreName()]['recruited']++;
         }
-        if (count($trial->checkInterimComplete($record))==0) {
+        $incompletePages = $trial->checkInterimComplete($record);
+        if (count($incompletePages)==0) {
             $centreArr[$record->getCentreName()]['complete']++;
         } else {
             $incompleteArr[$record->getField('core','trialid')]['centrename'] = $record->getCentreName();
-            $incompleteArr[$record->getField('core','trialid')]['pages'] = $trial->checkInterimComplete($record);
+            $incompleteArr[$record->getField('core','trialid')]['pages'] = $incompletePages;
         }
     }
+}
+if ($user->getPrivilege() == 1) {
+    $time = Timer::show();
+    echo "<p>{$time}</p>";
 }
 echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
 foreach ($centreArr as $centre => $centreData ) {
