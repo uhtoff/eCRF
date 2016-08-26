@@ -99,12 +99,14 @@ GROUP BY core.trialid";
 $result = DB::query($sql);
 $nodeviation = array();
 $deviation = array();
+$durations = array();
 foreach ($result->rows as $row) {
     if (is_null($row->stopcpap) || !$row->stopcpap) {
         $nodeviation[] = $row->trialid;
     } else {
         $deviation[] = $row->trialid;
     }
+    $durations[] = $row->cpapduration;
 }
 if (!empty($nodeviation) || !empty($deviation)) {
     echo "<p>All the following trial IDs were assigned to the trial group and received less than 240 minutes of CPAP</p>";
@@ -129,7 +131,30 @@ if (!empty($nodeviation) || !empty($deviation)) {
 } else {
     echo "<p>All patients assigned to the study group and receiving CPAP received at least 240 minutes of CPAP</p>";
 }
-
+$patientCount = count($durations);
+$timeSum = array_sum($durations);
+$avgTime = round($timeSum/$patientCount,1);
+echo "<p>Average time: {$avgTime} minutes</p>";
+echo "<table class='table table-striped table-bordered'>";
+echo "<thead><th>0 - 60 minutes</th><th>61 - 120 minutes</th><th>121 - 180 minutes</th><th>181 - 240 minutes</th></thead>";
+echo "<tbody><tr><td>";
+echo count(array_filter($durations, function($element) {
+    return ( $element >= 0 && $element <= 60 );
+}));
+echo "</td><td>";
+echo count(array_filter($durations, function($element) {
+    return ( $element >= 61 && $element <= 120 );
+}));
+echo "</td><td>";
+echo count(array_filter($durations, function($element) {
+    return ( $element >= 121 && $element <= 180 );
+}));
+echo "</td><td>";
+echo count(array_filter($durations, function($element) {
+    return ( $element >= 181 && $element <= 240 );
+}));
+echo "</td></tr></tbody>";
+echo "<table>";
 $records = $trial->getAllRecords();
 $today = new DateTime();
 $completeCutOff = $today->modify('40 days ago');
@@ -156,7 +181,6 @@ foreach ($records as $record) {
         }
     }
 }
-
 echo "<table class='table table-striped table-bordered dataTable'><thead><th>Centre</th><th>Num recruited &gt; 40 days ago</th><th>Data complete</th><th>Percent complete</th></thead><tbody>";
 foreach ($centreArr as $centre => $centreData ) {
     $percentComplete = round($centreData['complete']*100/$centreData['recruited'],1);
