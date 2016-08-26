@@ -704,9 +704,10 @@ _END;
 		if ( !$page ) {
             $page = $this->getPage();
         }
+        Timer::start();
         $fields = array();
         if ( $multiple ) {
-            if (!isset($this->multipleFormFields)) {
+            if (!isset($this->multipleFormFields[$page])) {
                 $sql = "SELECT id, labelText, fieldName, defaultVal,
 				  	type, toggle, mandatory, multiple, size, class 		 
 				  FROM formFields  
@@ -714,12 +715,12 @@ _END;
                   AND multiple = ?
 				  ORDER BY entryorder";
                 $pA = array('ss', $page, $multiple);
-                $result = $this->multipleFormFields = DB::query($sql, $pA);
+                $result = $this->multipleFormFields[$page] = DB::query($sql, $pA);
             } else {
-                $result = $this->multipleFormFields;
+                $result = $this->multipleFormFields[$page];
             }
         } else {
-            if (!isset($this->formFields)) {
+            if (!isset($this->formFields[$page])) {
                 $sql = "SELECT formFields.id, IFNULL( label_text, formFields.labelText ) as label_text, fieldName, defaultVal,
 					type, toggle, mandatory, size, class, readonly		 
 				FROM formFields
@@ -729,9 +730,9 @@ _END;
                 AND multiple IS NULL			
 				ORDER BY entryorder";
                 $pA = array('s', $page);
-                $result = $this->formFields = DB::query($sql, $pA);
+                $result = $this->formFields[$page] = DB::query($sql, $pA);
             } else {
-                $result = $this->formFields;
+                $result = $this->formFields[$page];
             }
         }
         $excluded = $this->getExcludedFormFields($record);
@@ -760,114 +761,122 @@ _END;
             $fields[ $name ][ 'readonly' ] = $row->readonly;
             $fields[ $name ][ 'class' ] = $row->class;
             if ( $row->type == 'checkbox' || $row->type == 'radio' ) { // Add checkbox options from validation table
-                $options = array();
-                $sql = "SELECT value, special FROM formVal 
+                if (!isset($this->checkboxRadioOptions[$row->id])) {
+                    $options = array();
+                    $sql = "SELECT value, special FROM formVal 
                     WHERE formFields_id = ?
                     AND operator = 'IN LIST'
                     ORDER BY groupNum";
-                $pA = array( 'i', $row->id );
-                $getTable = DB::cleanQuery($sql, $pA);
-                if ( $getTable->getRows() > 1 ) {
-					$sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text 
+                    $pA = array('i', $row->id);
+                    $getTable = DB::cleanQuery($sql, $pA);
+                    if ($getTable->getRows() > 1) {
+                        $sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text 
 					FROM {$getTable->value} a 
 					LEFT JOIN {$getTable->value} b 
 					ON a.option_value = b.option_value AND b.language_code = '{$this->language}' ";
-					if ( $getTable->value != 'centre' ) {
-						$sql .= "WHERE a.language_code = 'en' ";
-					}
-					$sql .= "ORDER BY a.option_order";
-					$result = DB::query($sql);
-					foreach ( $result->rows as $row ) {
-						$this->addOption( $row->option_text, $row->option_value );
-					}
-                } else {
-					$sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text 
+                        if ($getTable->value != 'centre') {
+                            $sql .= "WHERE a.language_code = 'en' ";
+                        }
+                        $sql .= "ORDER BY a.option_order";
+                        $result = DB::query($sql);
+                        foreach ($result->rows as $row) {
+                            $this->addOption($row->option_text, $row->option_value);
+                        }
+                    } else {
+                        $sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text 
 						FROM {$getTable->value} a 
 						LEFT JOIN {$getTable->value} b 
 						ON a.option_value = b.option_value AND b.language_code = '{$this->language}' 
 						WHERE a.language_code = 'en' ORDER BY a.option_order";
-					$ref = DB::query($sql);
+                        $ref = DB::query($sql);
+                    }
+                    foreach ($ref->rows as $rRow) {
+                        $options[$rRow->option_value] = $rRow->option_text;
+                    }
+                    $fields[$name]['options'] = $this->checkboxRadioOptions[$row->id] = $options;
+                } else {
+                    $fields[$name]['options'] = $this->checkboxRadioOptions[$row->id];
                 }
-                foreach( $ref->rows as $rRow ) {
-					$options[ $rRow->option_value ] = $rRow->option_text;
-				}
-                $fields[ $name ]['options'] = $options;
             }
             if ( $row->type == 'select' ) { // Adds select options from table
-                $options = array();
-                $sql = "SELECT value, special, operator FROM formVal 
+                if (!isset($this->selectOptions[$row->id])) {
+                    $options = array();
+                    $sql = "SELECT value, special, operator FROM formVal 
                     WHERE formFields_id = ? ORDER BY groupNum";
-                $pA = array( 'i', $row->id );
-                $getTable = DB::query($sql, $pA);
-                foreach( $getTable->rows as $vRow ) {
-                    $filterNum = NULL;
-                    switch( $vRow->operator ) {
-                        case 'IN LIST':
-                            if ( $vRow->special == 'FILTER' ) {
-                                $filter = explode('-',$vRow->value);
-                                $filterNum = $this->record->getField($filter[0],$filter[1]);
-                            } else {
-                                $refTable = DB::clean( $vRow->value );
-                                $order = $vRow->special == 'ALPHA' ? 'name' : 'option_order';
-                                if ( strpos($refTable,'-') ) {
-                                    $filterBy = explode('-',$refTable);
-                                    $refTable = $filterBy[0];
-                                    $filterTable = $filterBy[1];
+                    $pA = array('i', $row->id);
+                    $getTable = DB::query($sql, $pA);
+                    foreach ($getTable->rows as $vRow) {
+                        $filterNum = NULL;
+                        switch ($vRow->operator) {
+                            case 'IN LIST':
+                                if ($vRow->special == 'FILTER') {
+                                    $filter = explode('-', $vRow->value);
+                                    $filterNum = $this->record->getField($filter[0], $filter[1]);
                                 } else {
-                                    $filterTable = NULL;
-                                }
-								$sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text
+                                    $refTable = DB::clean($vRow->value);
+                                    $order = $vRow->special == 'ALPHA' ? 'name' : 'option_order';
+                                    if (strpos($refTable, '-')) {
+                                        $filterBy = explode('-', $refTable);
+                                        $refTable = $filterBy[0];
+                                        $filterTable = $filterBy[1];
+                                    } else {
+                                        $filterTable = NULL;
+                                    }
+                                    $sql = "SELECT a.option_value, IFNULL( b.option_text, a.option_text ) as option_text
 									FROM {$refTable} a 
 									LEFT JOIN {$refTable} b
 									ON a.option_value = b.option_value AND b.language_code = '{$this->language}' ";
-                                if ( $filterTable ) {
-                                    $sql .= "RIGHT JOIN {$filterTable} c
+                                    if ($filterTable) {
+                                        $sql .= "RIGHT JOIN {$filterTable} c
                                             ON a.id = c.{$refTable}_id ";
+                                    }
+                                    if ($refTable != 'centre') {
+                                        $sql .= "WHERE a.language_code = 'en' ";
+                                    }
+                                    $sql .= "ORDER BY a.{$order}";
+                                    $ref = DB::query($sql);
                                 }
-								if ( $refTable != 'centre' ) {
-									$sql .= "WHERE a.language_code = 'en' ";
-								}
-                                $sql .= "ORDER BY a.{$order}";
-								$ref = DB::query($sql);
-                            }
-                            break;
-                        case 'NOT IN LIST':
-                            $excludeArr = explode(',',$vRow->value);
-                            break;
-                        default:
-                            if ( $vRow->special == 'REFERENCE' ) {
-                                $valArr = explode('-',$vRow->value);
-                                if ( $valArr[0] == 'user' ) {
-                                    $valNum = $_SESSION['user']->get($valArr[1]);
-                                }
-                                foreach ( $ref->rows as $key => $rRow ) {
-                                    if ( $valNum > $rRow->option_value ) {
-                                        unset( $ref->rows[$key] );
+                                break;
+                            case 'NOT IN LIST':
+                                $excludeArr = explode(',', $vRow->value);
+                                break;
+                            default:
+                                if ($vRow->special == 'REFERENCE') {
+                                    $valArr = explode('-', $vRow->value);
+                                    if ($valArr[0] == 'user') {
+                                        $valNum = $_SESSION['user']->get($valArr[1]);
+                                    }
+                                    foreach ($ref->rows as $key => $rRow) {
+                                        if ($valNum > $rRow->option_value) {
+                                            unset($ref->rows[$key]);
+                                        }
                                     }
                                 }
+                                break;
+                        }
+                    }
+                    foreach ($ref->rows as $rRow) {
+                        if (isset($excludeArr) && in_array($rRow->option_value, $excludeArr)) continue;
+                        if ($row->fieldName == 'centre_id') { // If making fields for centre_id and user is only allowed local then restrict to local
+                            if (isset($this->user) && $this->user->isLocal() && $rRow->option_value != $this->user->getCentre()) {
+                                continue;
+                            } else {
+                                $options[$rRow->option_value] = $rRow->option_text;
                             }
-                            break;
-                    }
-                }
-                foreach( $ref->rows as $rRow ) {
-                    if ( isset($excludeArr) && in_array($rRow->option_value,$excludeArr) ) continue;
-                    if ( $row->fieldName == 'centre_id' ) { // If making fields for centre_id and user is only allowed local then restrict to local
-                        if ( isset( $this->user ) && $this->user->isLocal() && $rRow->option_value != $this->user->getCentre() ) {
-                            continue;
                         } else {
-                            $options[ $rRow->option_value ] = $rRow->option_text;
-                        }
-                    } else {
-                        if ( isset($filterNum) ) {
-                            $filterRef = explode(',',$rRow->filterRef);
-                            if ( !in_array( $filterNum, $filterRef )  ) continue;
-                            $options[ $rRow->option_value ] = $rRow->option_text;
-                        } else {
-                            $options[ $rRow->option_value ] = $rRow->option_text;
+                            if (isset($filterNum)) {
+                                $filterRef = explode(',', $rRow->filterRef);
+                                if (!in_array($filterNum, $filterRef)) continue;
+                                $options[$rRow->option_value] = $rRow->option_text;
+                            } else {
+                                $options[$rRow->option_value] = $rRow->option_text;
+                            }
                         }
                     }
+                    $fields[ $name ]['options'] = $this->selectOptions[$row->id] = $options;
+                } else {
+                    $fields[ $name ]['options'] = $this->selectOptions[$row->id];
                 }
-                $fields[ $name ]['options'] = $options;
             }
             if ( $row->type == 'number' ) { // Gets potential units for units table
                 $unit = array();
@@ -1067,7 +1076,6 @@ _END;
 		}
         // Fire this off first to prevent any possible complication of passing through the record to the form field processes
         $fields = $this->getFormFields( $page, false, NULL, $record );
-
         if ( !$record ) {
             $record = $this->record;
         }
