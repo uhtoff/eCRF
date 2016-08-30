@@ -159,7 +159,7 @@ $numAssigned = $result->num_assigned;
 
 echo "<p>For patients who have data entered:</p>";
 echo "<p>{$numAssigned} were assigned to CPAP</p>";
-echo "<p>{$result->num_cpap} received CPAP</p>";
+echo "<p>{$totalCpap} received CPAP</p>";
 echo "<p>Of those {$patientCount} received less than 240 minutes with an average time of {$avgTime} minutes</p>";
 
 echo "<table class='table table-striped table-bordered'>";
