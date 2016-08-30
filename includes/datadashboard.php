@@ -104,9 +104,9 @@ $deviation = array();
 $durations = array();
 foreach ($result->rows as $row) {
     if (is_null($row->stopcpap) || !$row->stopcpap) {
-        $nodeviation[] = $row->trialid;
+        $nodeviation[] = array('id' => $row->trialid, 'duration' => $row->cpapduration);
     } else {
-        $deviation[] = $row->trialid;
+        $deviation[] = array('id' => $row->trialid, 'duration' => $row->cpapduration);
     }
     $durations[] = $row->cpapduration;
 }
@@ -117,7 +117,7 @@ if (!empty($nodeviation) || !empty($deviation)) {
         echo "<li>The following Trial IDs have no appropriate Protocol Deviation form entered</li>";
         echo "<ul>";
         foreach ($nodeviation as $id) {
-            echo "<li>{$id}</li>";
+            echo "<li>{$id['id']} ({$id['duration']} minutes)</li>";
         }
         echo "</ul>";
     }
@@ -125,7 +125,7 @@ if (!empty($nodeviation) || !empty($deviation)) {
         echo "<li>The following Trial IDs have an appropriate Protocol Deviation form entered</li>";
         echo "<ul>";
         foreach ($deviation as $id) {
-            echo "<li>{$id}</li>";
+            echo "<li>{$id['id']} ({$id['duration']} minutes)</li>";
         }
         echo "</ul>";
     }
