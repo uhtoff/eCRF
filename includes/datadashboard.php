@@ -56,6 +56,7 @@ GROUP BY core.trialid";
 $result = DB::query($sql);
 $nodeviation = array();
 $deviation = array();
+$numNoCpap = $result->getRows();
 foreach ($result->rows as $row) {
     if (is_null($row->nocpap) || !$row->nocpap) {
         $nodeviation[] = $row->trialid;
@@ -135,7 +136,22 @@ if (!empty($nodeviation) || !empty($deviation)) {
 $patientCount = count($durations);
 $timeSum = array_sum($durations);
 $avgTime = round($timeSum/$patientCount,1);
-echo "<p>Average time: {$avgTime} minutes</p>";
+
+$sql = "SELECT COUNT(cpap.cpap) AS num_cpap FROM cpap
+LEFT JOIN link ON cpap.id = link.cpap_id
+LEFT JOIN core ON core.id = link.core_id
+WHERE studygroup = 1
+AND cpap.cpap = 1
+AND link.discontinue_id IS NULL";
+$result = DB::query($sql);
+
+$totalCpap = $result->num_cpap + $numNoCpap;
+
+echo "<p>For patients who have data entered:</p>";
+echo "<p>{$totalCpap} were assigned to CPAP</p>";
+echo "<p>{$result->num_cpap} received CPAP</p>";
+echo "<p>Of those {$patientCount} received less than 240 minutes with an average time of {$avgTime} minutes</p>";
+
 echo "<table class='table table-striped table-bordered'>";
 echo "<thead><th>0 - 60 minutes</th><th>61 - 120 minutes</th><th>121 - 180 minutes</th><th>181 - 240 minutes</th></thead>";
 echo "<tbody><tr><td>";
@@ -156,6 +172,7 @@ echo count(array_filter($durations, function($element) {
 }));
 echo "</td></tr></tbody>";
 echo "<table>";
+/** @var eCRFUser $user */
 if ($user->getPrivilege() == 1) {
     echo Timer::show();
 }
