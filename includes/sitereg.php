@@ -37,6 +37,7 @@ if ( isset( $_POST['centreSelect'] ) && is_numeric( $_POST['centreSelect'] ) ) {
                 }
             }
         } else {
+            $form->disableInput('siteinfo-name');
             $form->disableInput('sitereg-language_code');
         }
         if ( isset( $_SESSION['inputErr'] ) ) { // If any errors then add them to the form
