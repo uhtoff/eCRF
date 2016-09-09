@@ -7,7 +7,10 @@ if ( isset( $_GET['expire'] ) ) {
 	$_SESSION['error'] = "Log in expired due to inactivity";
     unset( $_SESSION['user'] );
 }
-if ( isset( $_GET['page'] ) && ctype_alnum( $_GET['page'] ) ) { // If someone tries to send something odd then just go to default
+
+$allowed = array("_");
+
+if ( isset( $_GET['page'] ) && ctype_alnum( str_replace($allowed,'',$_GET['page'] ) ) ) { // If someone tries to send something odd then just go to default
 	$page = $_GET['page'];
 } else {
 	$page = NULL;
